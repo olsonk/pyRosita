@@ -17,25 +17,24 @@ class Head:
     def move(self, x, y):
         string = ""
         time = 0.40
-        degX = x
-        degY = y
-        mapX = round(degX / 90 * 450)
-        mapY = round(degY / 90 * 450)
-        if 1800.0+mapX != self.turn:
-            diff = self.turn - (1400+mapY)
+		# map x/100 to total range of possible values. Add min value to mapX to get new value
+        mapX = round(x / 100 * 900)
+        mapY = round(y / 100 * 600)
+        if 1350.0+mapX != self.turn:
+            diff = self.turn - (1350+mapY)
             if abs(diff) > 200 and abs(diff) < 400:
                 time = 0.50
             elif abs(diff) > 400:
                 time = 0.75
-            self.turn = 1800 + mapX
+            self.turn = 1350 + mapX
             string += "Head Turn={}\n".format(self.turn)
-        if 1800.0+mapY != self.nod:
-            diff = self.nod - (1400+mapY)
+        if 1500.0+mapY != self.nod:
+            diff = self.nod - (1500+mapY)
             if abs(diff) > 200 and abs(diff) < 400:
                 time = 0.50
             elif abs(diff) > 400:
                 time = 0.75
-            self.nod = 1800 + mapY
+            self.nod = 1500 + mapY
             string += "Head Nod={}\n".format(self.nod)
         return [string, time]
 
@@ -58,25 +57,25 @@ class Torso:
     def move(self, x=0, y=0):
         string = ""
         time = 0.40
-        degX = x
-        degY = y
-        mapX = round(degX / 90 * 200)
-        mapY = round(degY / 90 * 150)
-        if 1800.0+mapX != self.turn:
-            diff = self.turn - (1400+mapY)
-            if abs(diff) > 200 and abs(diff) < 400:
-                time = 0.50
-            elif abs(diff) > 400:
-                time = 1.25
-            self.turn = 1800 + mapX
+        mapX = round(x / 100 * 400)
+        mapY = round(y / 100 * 300)
+        if 1600.0+mapX != self.turn:
+            diff = self.turn - (1600+mapX)
+            if abs(diff) > 100 and abs(diff) <= 200:
+                time = 0.75
+            elif abs(diff) > 200 and abs(diff) < 300:
+                time = 1.5
+            elif abs(diff) >= 300:
+                time = 2
+            self.turn = 1600 + mapX
             string += "Torso Turn={}\n".format(self.turn)
-        if 1800.0+mapY != self.bendForward:
-            diff = self.bendForward - (1400+mapY)
+        if 1950.0-mapY != self.bendForward:
+            diff = self.bendForward - (1950-mapY)
             if abs(diff) > 200 and abs(diff) < 400:
                 time = 0.50
             elif abs(diff) > 400:
                 time = 0.75
-            self.bendForward = 1800 + mapY
+            self.bendForward = 1950 - mapY
             string += "Torso Bend Forward={}\n".format(self.bendForward)
         return [string, time]
 
@@ -112,27 +111,33 @@ class Arm:
     def move(self, x=0, y=0):
         string = ""
         time = 0.40
-        degX = x
-        degY = y
-        mapX = round(degX / 90 * 500)
-        mapY = round(degY / 90 * 500)
-        if 1400+mapY != self.up:
-            diff = self.up - (1400+mapY)
-            if abs(diff) > 200 and abs(diff) < 400:
+        mapX = round(x / 100 * 530)
+        mapY = round(y / 100 * 1000)
+        elbow = round(1.05 ** y * 4)
+        if 900+mapY != self.up:
+            diff = self.up - (900+mapY)
+            if abs(diff) > 200 and abs(diff) < 300:
                 time = 0.50
-            elif abs(diff) > 400:
+            elif abs(diff) > 300 and abs(diff) < 500:
                 time = 0.75
-            self.up = 1400+mapY
+            else:
+                time = 1.25
+            self.up = 900+mapY
+            self.elbow = 1350+elbow
+            string += "{} Arm Elbow={}\n".format(self.side, self.elbow)
             string += "{} Arm Up={}\n".format(self.side, self.up)
-        if 1185+mapX != self.out:
-            diff = self.out - (1185+mapX)
+        if 920+mapX != self.out:
+            diff = self.out - (920+mapX)
             if abs(diff) > 200 and abs(diff) < 400:
                 time = 0.50
             elif abs(diff) > 400:
                 time = 0.75
-            self.out = 1185+mapX
+            self.out = 920+mapX
             string += "{} Arm Out={}\n".format(self.side, self.out)
         return [string, time]
+	
+    def bend_elbow(self, amt):
+	    string = ""
 
 class Hand:
     """A hand with a SIDE (left/right). Can open/close its INDEX, MIDDLE, RING, or BABY fingers"""
@@ -227,10 +232,10 @@ class Robot:
         
     def look_point_forward(self):
         string = ""
-        left = self.leftArm.move(-90, 0)
-        right = self.rightArm.move(-90, 0)
-        head = self.head.move(0, -20)
-        torso = self.torso.move(0, 0)
+        left = self.leftArm.move(0, 50)
+        right = self.rightArm.move(0, 50)
+        head = self.head.move(50, 20)
+        torso = self.torso.move(50, 50)
         string += left[0] + "\n"
         string += right[0] + "\n"
         string += head[0] + "\n"
@@ -238,57 +243,69 @@ class Robot:
         
         times = [left[1], right[1], head[1], torso[1]]
         time = max(times)
-        print(time)
         
         return [string, time]
     
     def look_point_left(self):
         string = ""
-        left = self.leftArm.move(-90, 0)
-        right = self.rightArm.move(-90, 0)
-        head = self.head.move(0, -20)
-        torso = self.torso.move(90, 0)
+        left = self.leftArm.move(0, 50)
+        right = self.rightArm.move(0, 50)
+        head = self.head.move(50, 20)
+        torso = self.torso.move(100, 50)
         string += left[0] + "\n"
         string += right[0] + "\n"
         string += head[0] + "\n"
         string += torso[0] + '\n'
         times = [left[1], right[1], head[1], torso[1]]
         time = max(times)
-        print(time)
         
         return [string, time]
     
     def look_point_right(self):
         string = ""
-        left = self.leftArm.move(-90, 0)
-        right = self.rightArm.move(-90, 0)
-        head = self.head.move(0, -20)
-        torso = self.torso.move(-90, 0)
+        left = self.leftArm.move(0, 50)
+        right = self.rightArm.move(0, 50)
+        head = self.head.move(50, 20)
+        torso = self.torso.move(0, 50)
         string += left[0] + "\n"
         string += right[0] + "\n"
         string += head[0] + "\n"
         string += torso[0] + '\n'
         times = [left[1], right[1], head[1], torso[1]]
         time = max(times)
-        print(time)
         
         return [string, time]
 		
     def left_aim(self, x=0, y=0):
-	    string = ""
-	    left = self.leftArm.move(x, y)
-	    right = self.rightArm.move(-90, 90)
-	    head = self.head.move(x, y)
-	    torso = self.torso.move(x, y)
-	    string += left[0] + '\n'
-	    string += right[0] + "\n"
-	    string += head[0] + "\n"
-	    string += torso[0] + '\n'
-	    times = [left[1], right[1], head[1], torso[1]]
-	    time = max(times)
-	    print(time)
-	    return [string, time]
-	
+        string = ""
+        look_x = round(0.0004*(x-50)**3+50)
+        left = self.leftArm.move(x, y)
+        right = self.rightArm.move(0, 99)
+        head = self.head.move(look_x, y)
+        torso = self.torso.move(x, y)
+        string += left[0] + '\n'
+        string += right[0] + "\n"
+        string += head[0] + "\n"
+        string += torso[0] + '\n'
+        times = [left[1], right[1], head[1], torso[1]]
+        time = max(times)
+        return [string, time]
+
+    def right_aim(self, x=0, y=0):
+        string = ""
+        look_x = round(0.0004*(x-50)**3+50)
+        right = self.rightArm.move(x, y)
+        left = self.leftArm.move(0, 99)
+        head = self.head.move(look_x, y)
+        torso = self.torso.move(x, y)
+        string += left[0] + '\n'
+        string += right[0] + "\n"
+        string += head[0] + "\n"
+        string += torso[0] + '\n'
+        times = [left[1], right[1], head[1], torso[1]]
+        time = max(times)
+        return [string, time]
+		
     def triggerBoth(self):
         left = self.leftHand.trigger()
         right = self.rightHand.trigger()
@@ -329,6 +346,7 @@ class Sequencer:
             "look point left": self.robot.look_point_left,
             "look point right": self.robot.look_point_right,
 			"left aim": self.robot.left_aim,
+            "right aim": self.robot.right_aim,
             "right arm move": self.robot.rightArm.move,
             "left arm move": self.robot.leftArm.move,
             "left trigger": self.robot.leftHand.trigger,
