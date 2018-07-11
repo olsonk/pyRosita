@@ -30,3 +30,16 @@ seq.generate_animation()
 
 f.close()
 ```
+
+## Recognized Actions
+1. `default` - Resets RoboThespian to its default pose (centered, with both arms at its sides and hands "open").
+2. `wait, time=__` - Creates a pause in the animation for the desired number of seconds.
+3. `head move, x=__, y=__` - Changes the head `turn` and `nod` attributes. Accepts a number between 0 and 100.
+  * 0 = full right/down
+  * 50 = center
+  * 100 = full left/up
+4. `left/right arm move, x=__, y=__` - Changes the specified arm `out` and `up` attributes. Elbow bends naturally as `y`/`up` value increases. Accepts a number between 0 and 100 (see above).
+5. `left/right aim, x=__, y=__` - Moves RoboThespian's head, torso, and left/right arm to all point toward a given point. Accepts a number between 0 and 100.
+6. `look point forward/left/right` - Moves both of RoboThespian's arms, as well as torso and head, to point the given direction.
+7. `left/right trigger/grip/drop/buttonA/buttonB` - Sets RoboThespian's finger controls for the specified button. `trigger`, `buttonA`, and `buttonB` automatically release the button quickly. `grip` and `drop` are a lasting change.
+8. `both trigger/grip/drop` - Same as above, but modifies relevant fingers on both hands simultaneously.
