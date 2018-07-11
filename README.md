@@ -14,7 +14,7 @@ f = open('sample-file.sequence', 'w')
 ```python
 seq = pyRosita.Sequencer(f)
 ```
-4. Add movements to the sequencer using the `.add()` method. Usage is to name the action you want RoboThespian to perform, along with any extra required information using keyword arguments. A list of all possible actions, along with required arguments, can be found below.
+4. Add movements to the sequencer using the `.add()` method. Usage is to name the action you want RoboThespian to perform, along with any extra required information using keyword arguments. A list of all possible actions, along with required arguments, can be found [below](https://github.com/olsonk/pyRosita/blob/master/README.md#recognized-actions).
 ```python
 seq.add("both grip")
 seq.add("left aim", x=40, y=50)
@@ -43,3 +43,14 @@ f.close()
 6. `look point forward/left/right` - Moves both of RoboThespian's arms, as well as torso and head, to point the given direction.
 7. `left/right trigger/grip/drop/buttonA/buttonB` - Sets RoboThespian's finger controls for the specified button. `trigger`, `buttonA`, and `buttonB` automatically release the button quickly. `grip` and `drop` are a lasting change.
 8. `both trigger/grip/drop` - Same as above, but modifies relevant fingers on both hands simultaneously.
+
+## TODO
+* Flesh out documentation (how to control other robot device attributes and add new actions)
+* Add new actions
+  * Reload
+  * Set individual body parts to given settings
+  * Change individual body parts by a given amount
+  * More complicated sets of movement (e.g. fire left, fire right, reload, point forward)
+* Integrate `requests` to upload and start playback of the sequence on RoboThespian automatically.
+* Implement `os` library to call other system actions and trigger sequence playback when ready.
+* Extensive testing to ensure accuracy of movements and timing
