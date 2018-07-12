@@ -1,9 +1,31 @@
+def check_timing(diff):
+    """Check the timing of the requested movement. Accepts *diff* between current position and requested position"""
+    time = 0.0
+    if abs(diff) > 100 and abs(diff) < 200:
+        time = 0.50
+    elif abs(diff) > 200 and abs(diff) < 300:
+        time = 1.5
+    elif abs(diff) >= 300:
+        time = 2
+    return time
+
 class Head:
     """A head that can TURN, NOD, and ROLL"""
     def __init__(self):
         self.turn = 1800
         self.nod = 1800
         self.roll = 1800
+        
+        # set up max/min/range attribute values
+        self.TURN_MAX = 2250
+        self.TURN_MIN = 1350
+        self.TURN_RANGE = self.TURN_MAX - self.TURN_MIN
+        self.NOD_MAX = 2100
+        self.NOD_MIN = 1500
+        self.NOD_RANGE = self.NOD_MAX - self.NOD_MIN
+        self.ROLL_MAX = 2000
+        self.ROLL_MIN = 1600
+        self.ROLL_RANGE = self.ROLL_MAX - self.ROLL_MIN
     
     def get_values(self):
         return {"Head Turn": self.turn, "Head Nod": self.nod, "Head Roll": self.roll}
@@ -18,24 +40,54 @@ class Head:
         string = ""
         time = 0.40
 		# map x/100 to total range of possible values. Add min value to mapX to get new value
-        mapX = round(x / 100 * 900)
-        mapY = round(y / 100 * 600)
-        if 1350.0+mapX != self.turn:
-            diff = self.turn - (1350+mapY)
-            if abs(diff) > 200 and abs(diff) < 400:
-                time = 0.50
-            elif abs(diff) > 400:
-                time = 0.75
-            self.turn = 1350 + mapX
+        mapX = round(x / 100 * self.TURN_RANGE)
+        mapY = round(y / 100 * self.NOD_RANGE)
+        if self.TURN_MIN+mapX != self.turn:
+            diff = self.turn - (self.TURN_MIN+mapY)
+            time = check_timing(diff)
+            self.turn = self.TURN_MIN + mapX
             string += "Head Turn={}\n".format(self.turn)
-        if 1500.0+mapY != self.nod:
-            diff = self.nod - (1500+mapY)
+        if self.NOD_MIN+mapY != self.nod:
+            diff = self.nod - (self.NOD_MIN+mapY)
             if abs(diff) > 200 and abs(diff) < 400:
                 time = 0.50
             elif abs(diff) > 400:
                 time = 0.75
-            self.nod = 1500 + mapY
+            self.nod = self.NOD_MIN + mapY
             string += "Head Nod={}\n".format(self.nod)
+        return [string, time]
+        
+    def set_nod(self, amt):
+        string = ""
+        time = 0.0
+        map = round(amt / 100 * self.NOD_RANGE)
+        if self.nod != self.NOD_MIN+map:
+            diff = self.nod - (self.NOD_MIN+map)
+            time = check_timing(diff)
+            self.nod = self.NOD_MIN + map
+            string += "Head Nod={}\n".format(self.side, self.nod)
+        return [string, time]
+        
+    def set_turn(self, amt):
+        string = ""
+        time = 0.0
+        map = round(amt / 100 * self.TURN_RANGE)
+        if self.turn != self.TURN_MIN+map:
+            diff = self.turn - (self.TURN_MIN+map)
+            time = check_timing(diff)
+            self.turn = self.TURN_MIN + map
+            string += "Head Turn={}\n".format(self.side, self.turn)
+        return [string, time]
+        
+    def set_roll(self, amt):
+        string = ""
+        time = 0.0
+        map = round(amt / 100 * self.ROLL_RANGE)
+        if self.roll != self.ROLL_MIN+map:
+            diff = self.roll - (self.ROLL_MIN+map)
+            time = check_timing(diff)
+            self.roll = self.ROLL_MIN + map
+            string += "Head Roll={}\n".format(self.side, self.roll)
         return [string, time]
 
 class Torso:
@@ -44,6 +96,17 @@ class Torso:
         self.bendForward = 1800
         self.sideways = 1800
         self.turn = 1800
+        
+        # Set up attribute min/max/range values
+        self.BENDFORWARD_MAX = 1950
+        self.BENDFORWARD_MIN = 1650
+        self.BENDFORWARD_RANGE = self.BENDFORWARD_MAX - self.BENDFORWARD_MIN
+        self.SIDEWAYS_MAX = 1860
+        self.SIDEWAYS_MIN = 1740
+        self.SIDEWAYS_RANGE = self.SIDEWAYS_MAX - self.SIDEWAYS_MIN
+        self.TURN_MAX = 2000
+        self.TURN_MIN = 1600
+        self.TURN_RANGE = self.TURN_MAX - self.TURN_MIN
         
     def get_values(self):
         return {"Torso Bend Forward": self.bendForward, "Torso Sideways": self.sideways, "Torso Turn": self.turn}
@@ -57,30 +120,59 @@ class Torso:
     def move(self, x=0, y=0):
         string = ""
         time = 0.40
-        mapX = round(x / 100 * 400)
-        mapY = round(y / 100 * 300)
-        if 1600.0+mapX != self.turn:
-            diff = self.turn - (1600+mapX)
-            if abs(diff) > 100 and abs(diff) <= 200:
-                time = 0.75
-            elif abs(diff) > 200 and abs(diff) < 300:
-                time = 1.5
-            elif abs(diff) >= 300:
-                time = 2
-            self.turn = 1600 + mapX
+        mapX = round(x / 100 * self.TURN_RANGE)
+        mapY = round(y / 100 * self.BENDFORWARD_RANGE)
+        if self.TURN_MIN+mapX != self.turn:
+            diff = self.turn - (self.TURN_MIN+mapX)
+            time = check_timing(diff)
+            self.turn = self.TURN_MIN + mapX
             string += "Torso Turn={}\n".format(self.turn)
-        if 1950.0-mapY != self.bendForward:
-            diff = self.bendForward - (1950-mapY)
+        if self.BENDFORWARD_MAX-mapY != self.bendForward:
+            diff = self.bendForward - (self.BENDFORWARD_MAX-mapY)
             if abs(diff) > 200 and abs(diff) < 400:
                 time = 0.50
             elif abs(diff) > 400:
                 time = 0.75
-            self.bendForward = 1950 - mapY
+            self.bendForward = self.BENDFORWARD_MAX - mapY
             string += "Torso Bend Forward={}\n".format(self.bendForward)
+        return [string, time]
+        
+    def set_turn(self, amt):
+        string = ""
+        time = 0.0
+        map = round(amt / 100 * self.TURN_RANGE)
+        if self.turn != self.TURN_MIN+map:
+            diff = self.turn - (self.TURN_MIN+map)
+            time = check_timing(diff)
+            self.turn = self.TURN_MIN + map
+            string += "Torso Turn={}\n".format(self.side, self.turn)
+        return [string, time]
+        
+    def set_bendForward(self, amt):
+        string = ""
+        time = 0.0
+        map = round(amt / 100 * self.BENDFORWARD_RANGE)
+        if self.bendForward != self.BENDFORWARD_MIN+map:
+            diff = self.bendForward - (self.BENDFORWARD_MIN+map)
+            time = check_timing(diff)
+            self.bendForward = self.BENDFORWARD_MIN + map
+            string += "Torso Bend Forward={}\n".format(self.side, self.bendForward)
+        return [string, time]
+        
+    def set_sideways(self, amt):
+        string = ""
+        time = 0.0
+        map = round(amt / 100 * self.SIDEWAYS_RANGE)
+        if self.sideways != self.SIDEWAYS_MIN+map:
+            diff = self.sideways - (self.SIDEWAYS_MIN+map)
+            time = check_timing(diff)
+            self.sideways = self.SIDEWAYS_MIN + map
+            string += "Torso Sidways={}\n".format(self.side, self.sideways)
         return [string, time]
 
 class Arm:
-    """An arm with a SIDE (left/right). Can go UP, OUT, TWIST at the shoulder, rotate/twist the FORE ARM, bend at the ELBOW, and bend at the WRIST"""
+    """An arm with a SIDE (left/right). Can go UP, OUT, TWIST at the shoulder, rotate/twist the FORE ARM, 
+       bend at the ELBOW, and bend at the WRIST"""
     def __init__(self, side):
         self.side = side
         self.up = 950
@@ -89,6 +181,26 @@ class Arm:
         self.foreArm = 1800
         self.elbow = 1350
         self.wrist = 1800
+        
+		# SET MAX VALUES FOR EACH ATTRIBUTE
+        self.UP_MAX = 1900
+        self.UP_MIN = 900
+        self.UP_RANGE = self.UP_MAX - self.UP_MIN
+        self.OUT_MAX = 1450
+        self.OUT_MIN = 920
+        self.OUT_RANGE = self.OUT_MAX - self.OUT_MIN
+        self.TWIST_MAX = 2200
+        self.TWIST_MIN = 1700
+        self.TWIST_RANGE = self.TWIST_MAX - self.TWIST_MIN
+        self.FOREARM_MAX = 2700
+        self.FOREARM_MIN = 900
+        self.FOREARM_RANGE = self.FOREARM_MAX - self.FOREARM_MIN
+        self.ELBOW_MAX = 1900
+        self.ELBOW_MIN = 1350
+        self.ELBOW_RANGE = self.ELBOW_MAX - self.ELBOW_MIN
+        self.WRIST_MAX = 2200
+        self.WRIST_MIN = 1400
+        self.WRIST_RANGE = self.WRIST_MAX - self.WRIST_MIN
         
     def get_values(self):
         return {"{} Arm Up".format(self.side): self.up,
@@ -100,44 +212,102 @@ class Arm:
                 }
     
     def reset(self):
-        self.up = 950
-        self.out = 950
+        self.up = self.UP_MIN
+        self.out = self.OUT_MIN
         self.twist = 1800
         self.foreArm = 1800
-        self.elbow = 1350
+        self.elbow = self.ELBOW_MIN
         self.wrist = 1800
         return self.get_values()
     
     def move(self, x=0, y=0):
         string = ""
         time = 0.40
-        mapX = round(x / 100 * 530)
-        mapY = round(y / 100 * 1000)
+        mapX = round(x / 100 * self.OUT_RANGE)
+        mapY = round(y / 100 * self.UP_RANGE)
         elbow = round(1.05 ** y * 4)
-        if 900+mapY != self.up:
-            diff = self.up - (900+mapY)
-            if abs(diff) > 200 and abs(diff) < 300:
-                time = 0.50
-            elif abs(diff) > 300 and abs(diff) < 500:
-                time = 0.75
-            else:
-                time = 1.25
-            self.up = 900+mapY
-            self.elbow = 1350+elbow
+        twist = round(1.05 ** x * 3.75)
+        if self.UP_MIN+mapY != self.up:
+            diff = self.up - (self.UP_MIN+mapY)
+            time = check_timing(diff)
+            self.up = self.UP_MIN+mapY
+            self.elbow = self.ELBOW_MIN + elbow
             string += "{} Arm Elbow={}\n".format(self.side, self.elbow)
             string += "{} Arm Up={}\n".format(self.side, self.up)
-        if 920+mapX != self.out:
-            diff = self.out - (920+mapX)
-            if abs(diff) > 200 and abs(diff) < 400:
-                time = 0.50
-            elif abs(diff) > 400:
-                time = 0.75
-            self.out = 920+mapX
+        if self.OUT_MIN+mapX != self.out:
+            diff = self.out - (self.OUT_MIN+mapX)
+            time = check_timing(diff)
+            self.out = self.OUT_MIN+mapX
+            self.twist = self.TWIST_MIN + twist
             string += "{} Arm Out={}\n".format(self.side, self.out)
+            string += "{} Arm Twist={}\n".format(self.side, self.twist)
         return [string, time]
 	
-    def bend_elbow(self, amt):
-	    string = ""
+    def set_up(self, amt):
+        string = ""
+        time = 0.0
+        map = round(amt / 100 * self.UP_RANGE)
+        if self.up != self.UP_MIN+map:
+            diff = self.up - (self.UP_MIN+map)
+            time = check_timing(diff)
+            self.up = self.UP_MIN + map
+            string += "{} Arm Up={}\n".format(self.side, self.up)
+        return [string, time]
+    
+    def set_out(self, amt):
+        string = ""
+        time = 0.0
+        map = round(amt / 100 * self.OUT_RANGE)
+        if self.out != self.OUT_MIN+map:
+            diff = self.out - (self.OUT_MIN+map)
+            time = check_timing(diff)
+            self.out = self.OUT_MIN + map
+            string += "{} Arm Out={}\n".format(self.side, self.out)
+        return [string, time]
+    
+    def set_twist(self, amt):
+        string = ""
+        time = 0.0
+        map = round(amt / 100 * self.TWIST_RANGE)
+        if self.twist != self.TWIST_MIN+map:
+            diff = self.twist - (self.TWIST_MIN+map)
+            time = check_timing(diff)
+            self.twist = self.TWIST_MIN + map
+            string += "{} Arm Twist={}\n".format(self.side, self.twist)
+        return [string, time]
+        
+    def set_foreArm(self, amt):
+        string = ""
+        time = 0.0
+        map = round(amt / 100 * self.FOREARM_RANGE)
+        if self.foreArm != self.FOREARM_MIN+map:
+            diff = self.foreArm - (self.FOREARM_MIN+map)
+            time = check_timing(diff)
+            self.foreArm = self.FOREARM_MIN + map
+            string += "{} Fore Arm Rotate={}\n".format(self.side, self.foreArm)
+        return [string, time]
+    
+    def set_elbow(self, amt):
+        string = ""
+        time = 0.0
+        map = round(amt / 100 * self.ELBOW_RANGE)
+        if self.elbow != self.ELBOW_MIN+map:
+            diff = self.elbow - (self.ELBOW_MIN+map)
+            time = check_timing(diff)
+            self.elbow = self.ELBOW_MIN + map
+            string += "{} Arm Elbow={}\n".format(self.side, self.elbow)
+        return [string, time]
+    
+    def set_wrist(self, amt):
+        string = ""
+        time = 0.0
+        map = round(amt / 100 * self.WRIST_RANGE)
+        if self.wrist != self.WRIST_MIN+map:
+            diff = self.wrist - (self.WRIST_MIN+map)
+            time = check_timing(diff)
+            self.wrist = self.WRIST_MIN + map
+            string += "{} arm Wrist={}\n".format(self.side, self.wrist)
+        return [string, time]
 
 class Hand:
     """A hand with a SIDE (left/right). Can open/close its INDEX, MIDDLE, RING, or BABY fingers"""
@@ -232,8 +402,8 @@ class Robot:
         
     def look_point_forward(self):
         string = ""
-        left = self.leftArm.move(0, 50)
-        right = self.rightArm.move(0, 50)
+        left = self.leftArm.move(0, 55)
+        right = self.rightArm.move(0, 55)
         head = self.head.move(50, 20)
         torso = self.torso.move(50, 50)
         string += left[0] + "\n"
@@ -248,8 +418,8 @@ class Robot:
     
     def look_point_left(self):
         string = ""
-        left = self.leftArm.move(0, 50)
-        right = self.rightArm.move(0, 50)
+        left = self.leftArm.move(0, 55)
+        right = self.rightArm.move(0, 55)
         head = self.head.move(50, 20)
         torso = self.torso.move(100, 50)
         string += left[0] + "\n"
@@ -263,8 +433,8 @@ class Robot:
     
     def look_point_right(self):
         string = ""
-        left = self.leftArm.move(0, 50)
-        right = self.rightArm.move(0, 50)
+        left = self.leftArm.move(0, 55)
+        right = self.rightArm.move(0, 55)
         head = self.head.move(50, 20)
         torso = self.torso.move(0, 50)
         string += left[0] + "\n"
@@ -332,7 +502,8 @@ class Robot:
         return [string, 0.40]
 
 class Sequencer:
-    """A sequencer that writes to a FILE. Has a ROBOT and TIMER to keep track of actions. Uses KEYFRAMES to generate animations. Recognizes ACTIONS to call robot methods"""
+    """A sequencer that writes to a FILE. Has a ROBOT and TIMER to keep track of actions. Uses KEYFRAMES 
+       to generate animations. Recognizes ACTIONS to call robot methods"""
     def __init__(self, file):
         self.file = file
         self.robot = Robot()
@@ -342,6 +513,12 @@ class Sequencer:
             'wait': self.wait,
             'default': self.robot.default,
             'head move': self.robot.head.move,
+            'head nod': self.robot.head.set_nod,
+            'head turn': self.robot.head.set_turn,
+            'head roll': self.robot.head.set_roll,
+            'torso bend forward': self.robot.torso.set_bendForward,
+            'torso sideways': self.robot.torso.set_sideways,
+            'torso turn': self.robot.torso.set_turn,
             "look point forward": self.robot.look_point_forward,
             "look point left": self.robot.look_point_left,
             "look point right": self.robot.look_point_right,
@@ -349,6 +526,18 @@ class Sequencer:
             "right aim": self.robot.right_aim,
             "right arm move": self.robot.rightArm.move,
             "left arm move": self.robot.leftArm.move,
+            "left up": self.robot.leftArm.set_up,
+            "right up": self.robot.rightArm.set_up,
+            "left out": self.robot.leftArm.set_out,
+            "right out": self.robot.rightArm.set_out,
+            "left twist": self.robot.leftArm.set_twist,
+            "right twist": self.robot.rightArm.set_twist,
+            "left forearm": self.robot.leftArm.set_foreArm,
+            "right forearm": self.robot.rightArm.set_foreArm,
+            "left elbow": self.robot.leftArm.set_elbow,
+            "right elbow": self.robot.rightArm.set_elbow,
+            "left wrist": self.robot.leftArm.set_wrist,
+            "right wrist": self.robot.rightArm.set_wrist,
             "left trigger": self.robot.leftHand.trigger,
             "right trigger": self.robot.rightHand.trigger,
             "both trigger": self.robot.triggerBoth,
@@ -374,22 +563,23 @@ class Sequencer:
         # create the key for this dict entry. Keys should always be time signatures for the keyframe animation
         key = "time={0:.2f}".format(self.timer)
         
-        # Check to see which keyword arguments were given with the .add method. Checks common keywords (x, y); if none given, just call the method with no arguments
+        # Check to see which keyword arguments were given with the .add method. Checks common keywords (x, y); 
+        # if none given, just call the method with no arguments
         if "x" in kwargs and "y" in kwargs:
             response = self.actions[action](kwargs["x"], kwargs["y"])
-            response_string = response[0]
-            response_timing = response[1]
         elif "time" in kwargs:
             response = self.actions[action](kwargs["time"])
-            response_string = response[0]
-            response_timing = response[1]
+        elif "amt" in kwargs:
+            response = self.actions[action](kwargs["amt"])
         else:
             response = self.actions[action]()
-            response_string = response[0]
-            response_timing = response[1]
+        response_string = response[0]
+        response_timing = response[1]
             
-        # if a method returns a list of strings, handle them all here to control timing without holding up the rest of the animation. This will auto-add pauses for things
-        # like button presses. If it's an int instead of a string, then wait was called; adjust timer for future events. If it's just a string, add to the keyframes!
+        # if a method returns a list of strings, handle them all here to control timing without holding up the 
+        # rest of the animation. This will auto-add pauses for things like button presses. If it's an int
+        # instead of a string, then wait was called; adjust timer for future events. If it's just a string, 
+        # add to the keyframes!
         if type(response_string) is list:
             for item in response_string:
                 key = "time={0:.2f}".format(self.timer)
@@ -399,7 +589,8 @@ class Sequencer:
             self.keyframes[key] = ""
             self.timer += response_timing
         else:
-            # check to see if there's already a key for the entry. If so, append the next action to the existing key. If not, create a new dict key and value
+            # check to see if there's already a key for the entry. If so, append the next action to the existing 
+            # key. If not, create a new dict key and value
             try:
                 self.keyframes[key] += "\n"+response_string
             except KeyError:
@@ -408,7 +599,7 @@ class Sequencer:
         
     def generate_animation(self):
         self.write("[Sequence Header]")
-        self.write("name=text-from-python")
+        self.write("name={}".format(self.file.name.split(".")[0]))
         self.write("description=compose_movement")
         self.write("number=2207")
         self.write('length={}'.format(round(self.timer)))
