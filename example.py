@@ -1,11 +1,11 @@
 import requests
 import pyRosita
-import json
-from pathlib import Path
 
+"""
 # set up a session in order to call the Tritium Web API on Rosita to run the sequence
 session = requests.Session()
-session.cookies.set("tritium_auth_token", "HJpBkJpmxgt2H1HjRQdLtLxhcr9lSC")
+session.cookies.set("tritium_auth_token", "")
+"""
 
 # Edit the filename in the next line to generate new .sequence files
 # MUST end in .sequence!
@@ -46,6 +46,7 @@ seq.add("default")
 seq.generate_animation()
 
 f.close()
+
 '''
 file_to_upload = open("kevintest.sequence")
 
