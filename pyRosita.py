@@ -793,6 +793,7 @@ class Robot:
         return [string, 0.40]
 
 from random import randint
+from datetime import datetime
         
 class Sequencer:
     """A sequencer that writes to a FILE. Has a ROBOT and TIMER to keep track of actions. Uses KEYFRAMES 
@@ -801,6 +802,7 @@ class Sequencer:
         self.file = file
         self.user = user
         self.sequence_id = randint(0, 99999)
+        self.created = datetime.now().strftime("%Y-%m-%dT%I:%M.%S")
         self.robot = Robot()
         self.timer = 0.00
         self.keyframes = {}
@@ -920,8 +922,8 @@ class Sequencer:
         self.write('robot_model=RoboThespian4')
         self.write('virtualrobot_id={:05d}'.format(self.sequence_id))
         self.write('virtualrobot_user={}'.format(self.user))
-        self.write('virtualrobot_created=2018-07-06T10:49:00.830569+00:00')
-        self.write('virtualrobot_modified=2018-07-06T10:49:00.830569+00:00')
+        self.write('virtualrobot_created={}'.format(self.created))
+        self.write('virtualrobot_modified={}'.format(self.created))
         self.write('')
         self.write('[Sequence Events]')
         for frame, value in self.keyframes.items():
