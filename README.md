@@ -38,11 +38,19 @@ f.close()
   * 0 = full right/down
   * 50 = center
   * 100 = full left/up
-4. `left/right arm move, x=__, y=__` - Changes the specified arm `out` and `up` attributes. Elbow bends naturally as `y`/`up` value increases. Accepts a number between 0 and 100 (see above).
-5. `left/right aim, x=__, y=__` - Moves RoboThespian's head, torso, and left/right arm to all point toward a given point. Accepts a number between 0 and 100.
-6. `look point forward/left/right` - Moves both of RoboThespian's arms, as well as torso and head, to point the given direction.
-7. `left/right trigger/grip/drop/buttonA/buttonB` - Sets RoboThespian's finger controls for the specified button. `trigger`, `buttonA`, and `buttonB` automatically release the button quickly. `grip` and `drop` are a lasting change.
-8. `both trigger/grip/drop` - Same as above, but modifies relevant fingers on both hands simultaneously.
+4. `head nod/turn/roll, amt=__` - Sets the head `nod`, `turn`, or `roll` attribute to the given `amt`
+5. `change head not/turn/roll, amt=__` - Changes the head `nod`, `turn`, or `roll` attribute by a given `amt`
+6. `torso sideways/turn/bend forward, amt=__` - Sets the torso `sideways`, `turn`, or `bendForward` attribute to the given `amt`
+7. `change torso sideways/turn/bend forward, amt=__` - Changes the torso `sideways`, `turn`, or `bendForward` attribute by a given `amt`
+8. `left/right arm up/out/twist, amt=__` - Sets the left/right arm's `up`, `out`, or `twist` attribute to the given `amt`
+9. `left/right forearm/elbow/wrist, amt=__` - Sets the left/right arm's `foreArm` rotate, `elbow`, or `wrist` attribute to the given `amt`
+10. `change left/right arm up/out/twist, amt=__` - Changes the left/right arm's `up`, `out`, or `twist` attribute by the given `amt`
+11. `change left/right forearm/elbow/wrist, amt=__` - Changes the left/right arm's `foreArm` rotate, `elbow`, or `wrist` attribute by the given `amt`
+12. `left/right arm move, x=__, y=__` - Changes the specified arm `out` and `up` attributes. Elbow bends naturally as `y`/`up` value increases. Accepts a number between 0 and 100 (see above).
+13. `left/right aim, x=__, y=__` - Moves RoboThespian's head, torso, and left/right arm to all point toward a given point. Accepts a number between 0 and 100.
+14. `look point forward/left/right` - Moves both of RoboThespian's arms, as well as torso and head, to point the given direction.
+15. `left/right trigger/grip/drop/buttonA/buttonB` - Sets RoboThespian's finger controls for the specified button. `trigger`, `buttonA`, and `buttonB` automatically release the button quickly. `grip` and `drop` are a lasting change.
+16. `both trigger/grip/drop` - Same as above, but modifies relevant fingers on both hands simultaneously.
 
 ## TODO
 * Flesh out documentation (how to control other robot device attributes and add new actions)
