@@ -63,51 +63,51 @@ class Head:
         self.ROLL_RANGE = self.ROLL_MAX - self.ROLL_MIN
     
     def get_values(self):
-    """Return a dict of all current attribute names and values
-    
-    Returns
-    -------
-    dict
-        Key: Attribute name, in a format ready to be added to .sequence file
-        Value: value of the specified attribute
-    
-    """
+        """Return a dict of all current attribute names and values
+        
+        Returns
+        -------
+        dict
+            Key: Attribute name, in a format ready to be added to .sequence file
+            Value: value of the specified attribute
+        
+        """
         return {"Head Turn": self.turn, "Head Nod": self.nod, "Head Roll": self.roll}
     
     def reset(self):
-    """Set all attr back to default values; return a dict of all attr names and values
-    
-    Returns
-    -------
-    dict
-        Key: Attribute name, in a format ready to be added to .sequence file
-        Value: default value of the specified attribute`
-    
-    """
+        """Set all attr back to default values; return a dict of all attr names and values
+        
+        Returns
+        -------
+        dict
+            Key: Attribute name, in a format ready to be added to .sequence file
+            Value: default value of the specified attribute`
+        
+        """
         self.turn = 1800
         self.nod = 1800
         self.roll = 1800
         return self.get_values()
     
     def move(self, x, y):
-    """Change head nod and turn values and return a list with a string and int
-    
-    Parameters
-    ----------
-    x : int
-        The requested 'turn' value. Must be between 0 and 100.
-    y : int
-        The requested 'nod' value. Must be between 0 and 100.
+        """Change head nod and turn values and return a list with a string and int
         
-    Returns
-    -------
-    list
-        0: string
-            A string of all sequence actions to be added to the file
-        1: int
-            The amount of time this action should take to complete
-    
-    """
+        Parameters
+        ----------
+        x : int
+            The requested 'turn' value. Must be between 0 and 100.
+        y : int
+            The requested 'nod' value. Must be between 0 and 100.
+            
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        
+        """
         # string defaults to empty if nod and turn were already at requested values
         string = ""
         
@@ -792,11 +792,15 @@ class Robot:
         
         return [string, 0.40]
 
+from random import randint
+        
 class Sequencer:
     """A sequencer that writes to a FILE. Has a ROBOT and TIMER to keep track of actions. Uses KEYFRAMES 
        to generate animations. Recognizes ACTIONS to call robot methods"""
-    def __init__(self, file):
+    def __init__(self, file, user):
         self.file = file
+        self.user = user
+        self.sequence_id = randint(0, 99999)
         self.robot = Robot()
         self.timer = 0.00
         self.keyframes = {}
@@ -914,8 +918,8 @@ class Sequencer:
         self.write('length={}'.format(round(self.timer)))
         self.write('[Meta]')
         self.write('robot_model=RoboThespian4')
-        self.write('virtualrobot_id=22777')
-        self.write('virtualrobot_user=Eldad')
+        self.write('virtualrobot_id={:05d}'.format(self.sequence_id))
+        self.write('virtualrobot_user={}'.format(self.user))
         self.write('virtualrobot_created=2018-07-06T10:49:00.830569+00:00')
         self.write('virtualrobot_modified=2018-07-06T10:49:00.830569+00:00')
         self.write('')
