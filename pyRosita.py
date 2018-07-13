@@ -798,9 +798,11 @@ from datetime import datetime
 class Sequencer:
     """A sequencer that writes to a FILE. Has a ROBOT and TIMER to keep track of actions. Uses KEYFRAMES 
        to generate animations. Recognizes ACTIONS to call robot methods"""
-    def __init__(self, file, user):
+    def __init__(self, file, user, id, description):
         self.file = file
         self.user = user
+        self.id = id
+        self.description = description
         self.sequence_id = randint(0, 99999)
         self.created = datetime.now().strftime("%Y-%m-%dT%I:%M.%S")
         self.robot = Robot()
@@ -915,12 +917,12 @@ class Sequencer:
     def generate_animation(self):
         self.write("[Sequence Header]")
         self.write("name={}".format(self.file.name.split(".")[0]))
-        self.write("description=compose_movement")
-        self.write("number=2207")
+        self.write("description={}".format(self.description))
+        self.write("number={}".format(self.sequence_id))
         self.write('length={}'.format(round(self.timer)))
         self.write('[Meta]')
         self.write('robot_model=RoboThespian4')
-        self.write('virtualrobot_id={:05d}'.format(self.sequence_id))
+        self.write('virtualrobot_id={}'.format(self.id))
         self.write('virtualrobot_user={}'.format(self.user))
         self.write('virtualrobot_created={}'.format(self.created))
         self.write('virtualrobot_modified={}'.format(self.created))
