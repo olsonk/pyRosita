@@ -10,7 +10,42 @@ def check_timing(diff):
     return time
 
 class Head:
-    """A head that can TURN, NOD, and ROLL"""
+    """Has nod, turn, and roll attr. Can set_ or change_ any of these attr, given an amt
+    
+    The Head class has three movements: nod (up and down), turn (left and right), and 
+    roll (tilt left/right). Each of these values has a min and max value. This class
+    also includes methods for getting current values, resetting them to 'default' 
+    position, a complex 'move' method for changing the nod and turn, and set_ / change_
+    methods for granular control of each attribute.
+    
+    Attributes
+    ----------
+    turn : int
+        The left/right motion of the head. Defaults to 1800 (center).
+    nod : int
+        The up/down motion of the head. Defaults to 1800 (horizontal).
+    roll : int
+        The tilt motion of the head. Defaults to 1800 (no tilt).
+    TURN_MAX : int
+        The maximum turn amount. Constant 2250
+    TURN_MIN : int
+        The minimum turn amount. Constant 1350
+    TURN_RANGE : int
+        The difference between TURN_MAX and TURN_MIN.
+    NOD_MAX : int
+        The maximum nod amount. Constant 2100
+    NOD_MIN : int
+        The minimum nod amount. Constant 1500
+    NOD_RANGE : int
+        The difference between NOD_MAX and NOD_MIN.
+    ROLL_MAX : int
+        The maximum roll amount. Constant 2000
+    ROLL_MIN : int
+        The minimum roll amount. Constant 1600
+    ROLL_RANGE : int
+        The difference between ROLL_MAX and ROLL_MIN.
+    
+    """
     def __init__(self):
         self.turn = 1800
         self.nod = 1800
@@ -28,25 +63,76 @@ class Head:
         self.ROLL_RANGE = self.ROLL_MAX - self.ROLL_MIN
     
     def get_values(self):
+    """Return a dict of all current attribute names and values
+    
+    Returns
+    -------
+    dict
+        Key: Attribute name, in a format ready to be added to .sequence file
+        Value: value of the specified attribute
+    
+    """
         return {"Head Turn": self.turn, "Head Nod": self.nod, "Head Roll": self.roll}
     
     def reset(self):
+    """Set all attr back to default values; return a dict of all attr names and values
+    
+    Returns
+    -------
+    dict
+        Key: Attribute name, in a format ready to be added to .sequence file
+        Value: default value of the specified attribute`
+    
+    """
         self.turn = 1800
         self.nod = 1800
         self.roll = 1800
         return self.get_values()
     
     def move(self, x, y):
+    """Change head nod and turn values and return a list with a string and int
+    
+    Parameters
+    ----------
+    x : int
+        The requested 'turn' value. Must be between 0 and 100.
+    y : int
+        The requested 'nod' value. Must be between 0 and 100.
+        
+    Returns
+    -------
+    list
+        0: string
+            A string of all sequence actions to be added to the file
+        1: int
+            The amount of time this action should take to complete
+    
+    """
+        # string defaults to empty if nod and turn were already at requested values
         string = ""
+        
+        # timing for all movements defaults to 0.40 sec
         time = 0.40
-		# map x/100 to total range of possible values. Add min value to mapX to get new value
+        
+		# Convert requested x and y values to percentages of possible nod/turn range
         mapX = round(x / 100 * self.TURN_RANGE)
         mapY = round(y / 100 * self.NOD_RANGE)
+        
+        # Check if requested position is already the current position
         if self.TURN_MIN+mapX != self.turn:
+            # determine the amount of distance that will be moved
             diff = self.turn - (self.TURN_MIN+mapY)
+            
+            # determine the time necessary to move this amount, set time to that value
             time = check_timing(diff)
+            
+            # set turn to new value
             self.turn = self.TURN_MIN + mapX
+            
+            # append string with instructions for the sequence file
             string += "Head Turn={}\n".format(self.turn)
+                
+        # same as above, but for 'nod' positions
         if self.NOD_MIN+mapY != self.nod:
             diff = self.nod - (self.NOD_MIN+mapY)
             if abs(diff) > 200 and abs(diff) < 400:
@@ -55,6 +141,7 @@ class Head:
                 time = 0.75
             self.nod = self.NOD_MIN + mapY
             string += "Head Nod={}\n".format(self.nod)
+            
         return [string, time]
         
     def set_nod(self, amt):
