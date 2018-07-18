@@ -17,7 +17,8 @@ id = ""
 # Edit the following line to include a short description of what this sequence performs
 description = ""
 
-seq = pyRosita.Sequencer(f, user, description, id)
+rt = pyRosita.Robot()
+seq = pyRosita.Sequencer(f, rt, user, description, id)
 
 """
 For movements, use numbers between -90 (fully down/right) and 90 (fully up/left)

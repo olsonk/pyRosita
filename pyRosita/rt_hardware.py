@@ -145,6 +145,21 @@ class Head:
         return [string, time]
         
     def set_nod(self, amt):
+        """Set head nod value to given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The requested 'nod' value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.NOD_RANGE)
@@ -156,6 +171,21 @@ class Head:
         return [string, time]
         
     def set_turn(self, amt):
+        """Set head turn value to given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The requested 'turn' value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.TURN_RANGE)
@@ -167,6 +197,21 @@ class Head:
         return [string, time]
         
     def set_roll(self, amt):
+        """Set head roll value to given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The requested 'roll' value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.ROLL_RANGE)
@@ -178,6 +223,21 @@ class Head:
         return [string, time]
     
     def change_nod(self, amt):
+        """Change head nod value by given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The difference in 'nod' requested. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.NOD_RANGE)
@@ -195,6 +255,21 @@ class Head:
         return [string, time]
         
     def change_turn(self, amt):
+        """Change head turn value by given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The difference in 'turn' requested. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.TURN_RANGE)
@@ -212,6 +287,21 @@ class Head:
         return [string, time]
         
     def change_roll(self, amt):
+        """Change head roll value by given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The difference in 'roll' requested. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.ROLL_RANGE)
@@ -229,7 +319,43 @@ class Head:
         return [string, time]
         
 class Torso:
-    """A torso that can BEND FORWARD, bend SIDEWAYS, or twist/TURN"""
+    """Has turn, bendForward, and sideways attr that can be set, given an amt
+    
+    The Torso class has three movements: bendForward (at the waist, forward or back), 
+    turn (twist at the waist, left or right), and sideways (stretch to the left or 
+    right at the waist). Each of these values has a min and max value. This class
+    also includes methods for getting current values, resetting them to 'default' 
+    position, a complex move command for changing bendForward and turn simultaneously, 
+    and set_ / change_ methods for granular control of each attribute.
+    
+    Attributes
+    ----------
+    bendForward : int
+        The lean forward/backward motion of the torso. Defaults to 1800 (center).
+    turn : int
+        The left/right motion of the torso. Defaults to 1800 (center).
+    sideways : int
+        The sideways lean left/right motion of the torso. Defaults to 1800 (no lean).
+    BENDFORWARD_MAX : int
+        The maximum forward bend amount. Constant 1950
+    BENDFORWARD_MIN : int
+        The minimum backward bend amount. Constant 1650
+    BENDFORWARD_RANGE : int
+        The difference between BENDFORWARD_MAX and BENDFORWARD_MIN.
+    TURN_MAX : int
+        The maximum turn amount (full left). Constant 2000
+    TURN_MIN : int
+        The minimum turn amount (full right). Constant 1600
+    TURN_RANGE : int
+        The difference between TURN_MAX and TURN_MIN.
+    SIDEWAYS_MAX : int
+        The maximum sideways lean amount (full right). Constant 1860
+    SIDEWAYS_MIN : int
+        The minimum sideways lean amount (full left). Constant 1740
+    SIDEWAYS_RANGE : int
+        The difference between SIDEWAYS_MAX and SIDEWAYS_MIN.
+    
+    """
     def __init__(self):
         self.bendForward = 1800
         self.sideways = 1800
@@ -247,15 +373,51 @@ class Torso:
         self.TURN_RANGE = self.TURN_MAX - self.TURN_MIN
         
     def get_values(self):
+        """Return a dict of all current attribute names and values
+        
+        Returns
+        -------
+        dict
+            Key: Attribute name, in a format ready to be added to .sequence file
+            Value: value of the specified attribute
+        
+        """
         return {"Torso Bend Forward": self.bendForward, "Torso Sideways": self.sideways, "Torso Turn": self.turn}
     
     def reset(self):
+        """Set all attr back to default values; return a dict of all attr names and values
+        
+        Returns
+        -------
+        dict
+            Key: Attribute name, in a format ready to be added to .sequence file
+            Value: default value of the specified attribute`
+        
+        """
         self.bendForward = 1800
         self.sideways = 1800
         self.turn = 1800
         return self.get_values()
     
     def move(self, x=0, y=0):
+        """Change torso turn and bendForward values; return a list with a string and int
+        
+        Parameters
+        ----------
+        x : int
+            The requested 'turn' value. Must be between 0 and 100.
+        y : int
+            The requested 'bendForward' value. Must be between 0 and 100.
+            
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        
+        """
         string = ""
         time = 0.40
         mapX = round(x / 100 * self.TURN_RANGE)
@@ -276,6 +438,21 @@ class Torso:
         return [string, time]
         
     def set_turn(self, amt):
+        """Set torso turn value to given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The requested 'turn' value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.TURN_RANGE)
@@ -287,6 +464,21 @@ class Torso:
         return [string, time]
         
     def set_bendForward(self, amt):
+        """Set torso bendForward value to given amt; return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The requested 'bendForward' value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.BENDFORWARD_RANGE)
@@ -298,6 +490,21 @@ class Torso:
         return [string, time]
         
     def set_sideways(self, amt):
+        """Set torso sideways value to given amount; return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The requested 'sideways' value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.SIDEWAYS_RANGE)
@@ -309,6 +516,21 @@ class Torso:
         return [string, time]
 
     def change_turn(self, amt):
+        """Change torso turn value by given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The difference in 'turn' value requested. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.TURN_RANGE)
@@ -326,6 +548,21 @@ class Torso:
         return [string, time]
     
     def change_bendForward(self, amt):
+        """Change torso bendForward value by given amt; return a list w a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The difference in 'bendForward' value requested. Must be between -100 & 100
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.BENDFORWARD_RANGE)
@@ -343,6 +580,21 @@ class Torso:
         return [string, time]
         
     def change_sideways(self, amt):
+        """Change torso sideways value by given amt; return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The difference in 'sideways' value requested. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.SIDEWAYS_RANGE)
@@ -360,8 +612,73 @@ class Torso:
         return [string, time]
     
 class Arm:
-    """An arm with a SIDE (left/right). Can go UP, OUT, TWIST at the shoulder, rotate/twist the FORE ARM, 
-       bend at the ELBOW, and bend at the WRIST"""
+    """Has up, out, twist, foreArm, elbow, and wrist attr. Can set_ or change_ any of 
+       these attr, given an amt
+    
+    The Arm class has six movements: 
+    - up (raising/lowering arm perpendicular to torso), 
+    - out (raising/lowering arm at the shoulder, away from torso), 
+    - twist (rotating upper arm toward or away from torso), 
+    - foreArm (rotating the forearm to palm up/down),
+    - elbow (bending the elbow), 
+    - and wrist (bending the hand palm out or palm in). 
+    Each of these values has a min and max value. This class also includes methods for 
+    getting current values, resetting them to 'default' position, a complex 'move' 
+    method for changing the nod and turn, and set_ / change_ methods for granular 
+    control of each attribute.
+    
+    Attributes
+    ----------
+    up : int
+        The up/down motion of the arm, close to the torso. Defaults to 950 (vertical).
+    out : int
+        The up/down motion of the arm, away from torso. Defaults to 950 (horizontal).
+    twist : int
+        The in/out rotation of the upper arm. Defaults to 1800 (no twist).
+    foreArm : int
+        The rotation of the forearm (palm up/down). Defaults to 1800 (no rotation).
+    elbow : int
+        The bending of the elbow. Defaults to 1350 (no bend).
+    wrist : int
+        The bending of the wrist, palm in/out. Defaults to 1800 (no bend).
+    UP_MAX : int
+        The maximum up amount. Constant 1900
+    UP_MIN : int
+        The minimum up amount. Constant 900
+    UP_RANGE : int
+        The difference between UP_MAX and UP_MIN.
+    OUT_MAX : int
+        The maximum out amount. Constant 1450
+    OUT_MIN : int
+        The minimum out amount. Constant 920
+    OUT_RANGE : int
+        The difference between OUT_MAX and OUT_MIN.
+    TWIST_MAX : int
+        The maximum twist amount. Constant 2200
+    TWIST_MIN : int
+        The minimum twist amount. Constant 1700
+    TWIST_RANGE : int
+        The difference between TWIST_MAX and TWIST_MIN.
+    FOREARM_MAX : int
+        The maximum foreArm amount. Constant 2700
+    FOREARM_MIN : int
+        The minimum foreArm amount. Constant 900
+    FOREARM_RANGE : int
+        The difference between FOREARM_MAX and FOREARM_MIN.
+    ELBOW_MAX : int
+        The maximum elbow amount. Constant 1900
+    ELBOW_MIN : int
+        The minimum elbow amount. Constant 1350
+    ELBOW_RANGE : int
+        The difference between ELBOW_MAX and ELBOW_MIN.
+    WRIST_MAX : int
+        The maximum wrist amount. Constant 2200
+    WRIST_MIN : int
+        The minimum wrist amount. Constant 1400
+    WRIST_RANGE : int
+        The difference between WRIST_MAX and WRIST_MIN.
+    
+    """
     def __init__(self, side):
         self.side = side
         self.up = 950
@@ -371,7 +688,7 @@ class Arm:
         self.elbow = 1350
         self.wrist = 1800
         
-		# SET MAX VALUES FOR EACH ATTRIBUTE
+		# SET MAX/MIN VALUES FOR EACH ATTRIBUTE
         self.UP_MAX = 1900
         self.UP_MIN = 900
         self.UP_RANGE = self.UP_MAX - self.UP_MIN
@@ -392,6 +709,15 @@ class Arm:
         self.WRIST_RANGE = self.WRIST_MAX - self.WRIST_MIN
         
     def get_values(self):
+        """Return a dict of all current attribute names and values
+        
+        Returns
+        -------
+        dict
+            Key: Attribute name, in a format ready to be added to .sequence file
+            Value: value of the specified attribute
+        
+        """
         return {"{} Arm Up".format(self.side): self.up,
                 "{} Arm Out".format(self.side): self.out,
                 "{} Arm Twist".format(self.side): self.twist,
@@ -401,6 +727,15 @@ class Arm:
                 }
     
     def reset(self):
+        """Set all attr back to default values; return a dict of all attr names and values
+        
+        Returns
+        -------
+        dict
+            Key: Attribute name, in a format ready to be added to .sequence file
+            Value: default value of the specified attribute`
+        
+        """
         self.up = self.UP_MIN
         self.out = self.OUT_MIN
         self.twist = 1800
@@ -410,6 +745,24 @@ class Arm:
         return self.get_values()
     
     def move(self, x=0, y=0):
+        """Change arm up/elbow and out/twist values; return a list with a string and int
+        
+        Parameters
+        ----------
+        x : int
+            The requested 'out' value. Must be between 0 and 100.
+        y : int
+            The requested 'up' value. Must be between 0 and 100.
+            
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        
+        """
         string = ""
         time = 0.40
         mapX = round(x / 100 * self.OUT_RANGE)
@@ -433,6 +786,21 @@ class Arm:
         return [string, time]
 	
     def set_up(self, amt):
+        """Set arm up value to given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The requested 'up' value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.UP_RANGE)
@@ -444,6 +812,21 @@ class Arm:
         return [string, time]
     
     def set_out(self, amt):
+        """Set arm out value to given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The requested 'out' value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.OUT_RANGE)
@@ -455,6 +838,21 @@ class Arm:
         return [string, time]
     
     def set_twist(self, amt):
+        """Set arm twist value to given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The requested 'twist' value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.TWIST_RANGE)
@@ -466,6 +864,21 @@ class Arm:
         return [string, time]
         
     def set_foreArm(self, amt):
+        """Set forearm rotate value to given amount; return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The requested 'foreArm' value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.FOREARM_RANGE)
@@ -477,6 +890,21 @@ class Arm:
         return [string, time]
     
     def set_elbow(self, amt):
+        """Set arm's elbow value to given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The requested 'elbow' value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.ELBOW_RANGE)
@@ -488,6 +916,21 @@ class Arm:
         return [string, time]
     
     def set_wrist(self, amt):
+        """Set arm's wrist value to given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The requested 'wrist' value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.WRIST_RANGE)
@@ -499,6 +942,21 @@ class Arm:
         return [string, time]
 
     def change_up(self, amt):
+        """Change arm's up value by given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The difference in 'up' value requested. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.UP_RANGE)
@@ -516,6 +974,21 @@ class Arm:
         return [string, time]
         
     def change_out(self, amt):
+        """Change arm's out value by given amount and return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The difference in 'out' value requested. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.OUT_RANGE)
@@ -533,6 +1006,21 @@ class Arm:
         return [string, time]
         
     def change_twist(self, amt):
+        """Change arm's twist value by given amount; return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The difference in 'twist' value requested. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.TWIST_RANGE)
@@ -550,6 +1038,21 @@ class Arm:
         return [string, time]
         
     def change_foreArm(self, amt):
+        """Change arm's foreArm value by given amt; return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The difference in 'foreArm' value requested. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.FOREARM_RANGE)
@@ -567,6 +1070,21 @@ class Arm:
         return [string, time]
         
     def change_elbow(self, amt):
+        """Change arm's elbow value by given amount; return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The difference in 'elbow' value requested. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.ELBOW_RANGE)
@@ -584,6 +1102,21 @@ class Arm:
         return [string, time]
         
     def change_wrist(self, amt):
+        """Change arm's wrist value by given amount; return a list with a string and int
+        
+        Parameters
+        ----------
+        amt : int
+            The difference in 'wrist' value requested. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         map = round(amt / 100 * self.WRIST_RANGE)
@@ -601,7 +1134,27 @@ class Arm:
         return [string, time]
 
 class Hand:
-    """A hand with a SIDE (left/right). Can open/close its INDEX, MIDDLE, RING, or BABY fingers"""
+    """Has index, middle, ring, and baby attr that can be set or toggled
+    
+    The Hand class has five attributes: a name, given on instantiation,
+    and four other attributes that represent fingers. Each of these fingers
+    can be 0 (open) or 1 (closed). The trigger, buttonA, and buttonB functions
+    toggle the finger, then release it again after a short period. The grip and
+    drop methods set the attributes "permanently."
+    
+    Attributes
+    ----------
+    side : string
+        The side of the body to which the hand is attached. Either "L" or "R"
+    index : int
+        The index (trigger) finger of the hand. Defaults to 0.
+    middle : int
+        The middle (grip) finger of the hand. Defaults to 0.
+    ring : int
+        The ring (buttton A) finger of the hand. Defaults to 0.
+    baby : int
+        The baby (button B) finger of the hand. Defaults to 0.
+    """
     def __init__(self, side):
         self.side = side
         self.index = 0
@@ -610,6 +1163,15 @@ class Hand:
         self.baby = 0
         
     def get_values(self):
+        """Return a dict of all current attribute names and values
+        
+        Returns
+        -------
+        dict
+            Key: Attribute name, in a format ready to be added to .sequence file
+            Value: value of the specified attribute
+        
+        """
         return {"{} Finger index".format(self.side): self.index,
                 "{} Finger middle".format(self.side): self.middle,
                 "{} Finger Ring".format(self.side): self.ring,
@@ -617,6 +1179,15 @@ class Hand:
                 }
     
     def reset(self):
+        """Set all attr back to default values; return a dict of all attr names and values
+        
+        Returns
+        -------
+        dict
+            Key: Attribute name, in a format ready to be added to .sequence file
+            Value: default value of the specified attribute`
+        
+        """
         self.index = 0
         self.middle = 0
         self.ring = 0
@@ -624,22 +1195,48 @@ class Hand:
         return self.get_values()
     
     def trigger(self):
+        """Return a list of a list (string instructions for sequencer) and int timer val
+        
+        This method sets off two finger motions: first, a toggle of the finger's 
+        current state; then, a toggle of the finger back to its initial state. The timer
+        value is used to control the length of time for the action
+        
+        """
         if not self.index:
             return [["{} Finger index={}".format(self.side, 1), "{} Finger index={}\n".format(self.side, 0)], 0.40]
         else:
             return [["{} Finger index={}".format(self.side, 0), "{} Finger index={}\n".format(self.side, 1)], 0.40]
     
     def grip(self):
+        """Return a list of a string with .sequencer instructions and an int timer value
+        
+        This method sets the middle finger's value to 1 and returns a string for the 
+        .sequence file and a timing value
+        
+        """
         if not self.middle:
             self.middle = 1
         return ["{} Finger middle={}".format(self.side, self.middle), 0.40]
     
     def drop(self):
+        """Return a list of a string with .sequencer instructions and an int timer value
+        
+        This method sets the middle finger's value to 0 and returns a string for the 
+        .sequence file and a timing value
+        
+        """
         if self.middle:
             self.middle = 0
         return ["{} Finger middle={}".format(self.side, self.middle), 0.40]
     
     def buttonA(self):
+        """Return a list of a list (string instructions for sequencer) and int timer val
+        
+        This method sets off two finger motions: first, a toggle of the finger's 
+        current state; then, a toggle of the finger back to its initial state. The timer
+        value is used to control the length of time for the action
+        
+        """
         if self.ring:
             self.ring = 0
         else:
@@ -647,6 +1244,13 @@ class Hand:
         return [["{} Finger ring={}".format(self.side, self.ring), '', "{} Finger ring={}".format(self.side, self.ring - self.ring)], 0.40]
     
     def buttonB(self):
+        """Return a list of a list (string instructions for sequencer) and int timer val
+        
+        This method sets off two finger motions: first, a toggle of the finger's 
+        current state; then, a toggle of the finger back to its initial state. The timer
+        value is used to control the length of time for the action
+        
+        """
         if self.baby:
             self.baby = 0
         else:
@@ -654,7 +1258,28 @@ class Hand:
         return [["{} Finger baby={}".format(self.side, self.baby), '', "{} Finger baby={}".format(self.side, self.baby - self.baby)], 0.40]
         
 class Robot:
-    """A body with a HEAD, TORSO, LEFTARM, RIGHTARM, LEFTHAND, and RIGHTHAND"""
+    """Has Head, Torso, Arms, Hands. Performs actions that are a combo of limb movements
+    
+    The Robot class is a combination of limb instances. It is what the user will command
+    to change, and it can perform actions that are a combination of limb movements, such
+    as aiming, pointing, and firing.
+    
+    Attributes
+    ----------
+    head : Head instance
+        The head of the robot. See Head definition above for attributes and methods.
+    torso : Torso instance
+        The torso of the robot. See Torso definition above for attributes and methods.
+    leftArm : Arm instance
+        The left arm of the robot. See Arm definition above for attributes and methods.
+    rightArm : Arm instance
+        The right arm of the robot. See Arm definition above for attributes and methods.
+    leftHand : Hand instance
+        The left hand of the robot. See Hand definition above for attributes and methods.
+    rightHand : Hand instance
+        The right hand of the robot. See Hand definition above for attributes and methods.
+    
+    """
     def __init__(self):
         self.head = Head()
         self.torso = Torso()
@@ -664,6 +1289,20 @@ class Robot:
         self.rightHand = Hand("R")
     
     def default(self):
+        """Returns a list with a string for the .sequence file and a timing int of 0.40
+        
+        This method resets all body part values to their defaults. It is useful when
+        you want the robot to return to its initial state (limbs centered and hands
+        at sides, all fingers released). It calls each limb's .reset() method and
+        appends limb changes to a string, which it returns.
+        
+        Returns
+        -------
+        list
+            0: string of .sequence commands for how each limb needs to change
+            1: int of 0.40, which is the amount of time to reserve for this movement
+        
+        """
         string = ""
         head = self.head.reset()
         for key, value in head.items():
@@ -692,6 +1331,20 @@ class Robot:
         return [string, 0.40]
         
     def look_point_forward(self):
+        """Returns a list with a string for the .sequence file and a timing int
+        
+        This method ensures that the robot faces forward, with head slightly bowed
+        and both arms pointed straight in front of the robot. Once all limb methods
+        are called, it appends commands to a string and determines the furthest 
+        distance any limbs need to move in order to ensure that timing is sufficient.
+        
+        Returns
+        -------
+        list
+            0: string of .sequence commands for how each limb needs to change
+            1: int representing timing, the amount of time to reserve for this movement
+        
+        """
         string = ""
         left = self.leftArm.move(0, 55)
         right = self.rightArm.move(0, 55)
@@ -708,6 +1361,21 @@ class Robot:
         return [string, time]
     
     def look_point_left(self):
+        """Returns a list with a string for the .sequence file and a timing int
+        
+        This method ensures that the robot faces left with its torso, with head 
+        slightly bowed and both arms pointed straight in front of the robot. Once 
+        all limb methods are called, it appends commands to a string and determines 
+        the furthest distance any limbs need to move in order to ensure that timing 
+        is sufficient.
+        
+        Returns
+        -------
+        list
+            0: string of .sequence commands for how each limb needs to change
+            1: int representing timing, the amount of time to reserve for this movement
+        
+        """
         string = ""
         left = self.leftArm.move(0, 55)
         right = self.rightArm.move(0, 55)
@@ -723,6 +1391,21 @@ class Robot:
         return [string, time]
     
     def look_point_right(self):
+        """Returns a list with a string for the .sequence file and a timing int
+        
+        This method ensures that the robot faces right with its torso, with head 
+        slightly bowed and both arms pointed straight in front of the robot. Once 
+        all limb methods are called, it appends commands to a string and determines 
+        the furthest distance any limbs need to move in order to ensure that timing 
+        is sufficient.
+        
+        Returns
+        -------
+        list
+            0: string of .sequence commands for how each limb needs to change
+            1: int representing timing, the amount of time to reserve for this movement
+        
+        """
         string = ""
         left = self.leftArm.move(0, 55)
         right = self.rightArm.move(0, 55)
@@ -738,6 +1421,19 @@ class Robot:
         return [string, time]
 		
     def left_aim(self, x=0, y=0):
+        """Returns a list with a string for the .sequence file and a timing int
+        
+        This method causes the robot to aim with its left hand and arm at the
+        given point. The robot's head and torso also move to focus on the point.
+        The robot's right hand will point up toward the sky.
+        
+        Returns
+        -------
+        list
+            0: string of .sequence commands for how each limb needs to change
+            1: int representing timing, the amount of time to reserve for this movement
+        
+        """
         string = ""
         look_x = round(0.0004*(x-50)**3+50)
         left = self.leftArm.move(x, y)
@@ -753,6 +1449,19 @@ class Robot:
         return [string, time]
 
     def right_aim(self, x=0, y=0):
+        """Returns a list with a string for the .sequence file and a timing int
+        
+        This method causes the robot to aim with its right hand and arm at the
+        given point. The robot's head and torso also move to focus on the point.
+        The robot's left hand will point up toward the sky.
+        
+        Returns
+        -------
+        list
+            0: string of .sequence commands for how each limb needs to change
+            1: int representing timing, the amount of time to reserve for this movement
+        
+        """
         string = ""
         look_x = round(0.0004*(x-50)**3+50)
         right = self.rightArm.move(x, y)
@@ -768,6 +1477,21 @@ class Robot:
         return [string, time]
 		
     def triggerBoth(self):
+        """Returns a list with a string for the .sequence file and a timing int
+        
+        This method makes both index fingers on the robot toggle on and off at the
+        same time. Each hand's trigger() method is called, and the strings for 
+        sequencer are stored in a new variable (the timing instructions are ignored).
+        They are then re-combined so that each hand's fire commands are followed by
+        the release commands, and finally returned with appropriate timing (0.40).
+        
+        Returns
+        -------
+        list
+            0: string of .sequence commands for how each limb needs to change
+            1: int representing timing, the amount of time to reserve for this movement
+        
+        """
         left = self.leftHand.trigger()
         right = self.rightHand.trigger()
         left_fire = left[0]
@@ -779,6 +1503,18 @@ class Robot:
         return [string, 0.40]
     
     def gripBoth(self):
+        """Returns a list with a string for the .sequence file and a timing int
+        
+        This method causes the robot's middle fingers to both turn on, which will press
+        the "grip" Touch buttons.
+        
+        Returns
+        -------
+        list
+            0: string of .sequence commands for how each limb needs to change
+            1: int representing timing, the amount of time to reserve for this movement
+        
+        """
         string = ""
         string += self.leftHand.grip()[0] + "\n"
         string += self.rightHand.grip()[0] + "\n"
@@ -786,149 +1522,20 @@ class Robot:
         return [string, 0.40]
         
     def dropBoth(self):
+        """Returns a list with a string for the .sequence file and a timing int
+        
+        This method causes the robot's middle fingers to both turn off, which will 
+        release the "grip" Touch buttons.
+        
+        Returns
+        -------
+        list
+            0: string of .sequence commands for how each limb needs to change
+            1: int representing timing, the amount of time to reserve for this movement
+        
+        """
         string = ""
         string += self.leftHand.drop()[0] + "\n"
         string += self.rightHand.drop()[0] + "\n"
         
         return [string, 0.40]
-
-from random import randint
-from datetime import datetime
-        
-class Sequencer:
-    """A sequencer that writes to a FILE. Has a ROBOT and TIMER to keep track of actions. Uses KEYFRAMES 
-       to generate animations. Recognizes ACTIONS to call robot methods"""
-    def __init__(self, file, user, id, description):
-        self.file = file
-        self.user = user
-        self.id = id
-        self.description = description
-        self.sequence_id = randint(0, 99999)
-        self.created = datetime.now().strftime("%Y-%m-%dT%I:%M.%S")
-        self.robot = Robot()
-        self.timer = 0.00
-        self.keyframes = {}
-        self.actions = {
-            'wait': self.wait,
-            'default': self.robot.default,
-            'head move': self.robot.head.move,
-            'head nod': self.robot.head.set_nod,
-            'head turn': self.robot.head.set_turn,
-            'head roll': self.robot.head.set_roll,
-            "change head nod": self.robot.head.change_nod,
-            "change head turn": self.robot.head.change_turn,
-            "change head roll": self.robot.head.change_roll,
-            'torso bend forward': self.robot.torso.set_bendForward,
-            'torso sideways': self.robot.torso.set_sideways,
-            'torso turn': self.robot.torso.set_turn,
-            'change torso bend forward': self.robot.torso.change_bendForward,
-            'change torso sideways': self.robot.torso.change_sideways,
-            'change torso turn': self.robot.torso.change_turn,
-            "look point forward": self.robot.look_point_forward,
-            "look point left": self.robot.look_point_left,
-            "look point right": self.robot.look_point_right,
-			"left aim": self.robot.left_aim,
-            "right aim": self.robot.right_aim,
-            "right arm move": self.robot.rightArm.move,
-            "left arm move": self.robot.leftArm.move,
-            "left up": self.robot.leftArm.set_up,
-            "right up": self.robot.rightArm.set_up,
-            "left out": self.robot.leftArm.set_out,
-            "right out": self.robot.rightArm.set_out,
-            "left twist": self.robot.leftArm.set_twist,
-            "right twist": self.robot.rightArm.set_twist,
-            "left forearm": self.robot.leftArm.set_foreArm,
-            "right forearm": self.robot.rightArm.set_foreArm,
-            "left elbow": self.robot.leftArm.set_elbow,
-            "right elbow": self.robot.rightArm.set_elbow,
-            "left wrist": self.robot.leftArm.set_wrist,
-            "right wrist": self.robot.rightArm.set_wrist,
-            "change left arm up": self.robot.leftArm.change_up,
-            "change right arm up": self.robot.rightArm.change_up,
-            "change left arm out": self.robot.leftArm.change_out,
-            "change right arm out": self.robot.rightArm.change_out,
-            "change left arm twist": self.robot.leftArm.change_twist,
-            "change right arm twist": self.robot.rightArm.change_twist,
-            "change left forearm": self.robot.leftArm.change_foreArm,
-            "change right forearm": self.robot.rightArm.change_foreArm,
-            "change left elbow": self.robot.leftArm.change_elbow,
-            "change right elbow": self.robot.rightArm.change_elbow,
-            "change left wrist": self.robot.leftArm.change_wrist,
-            "change right wrist": self.robot.rightArm.change_wrist,
-            "left trigger": self.robot.leftHand.trigger,
-            "right trigger": self.robot.rightHand.trigger,
-            "both trigger": self.robot.triggerBoth,
-            "left grip": self.robot.leftHand.grip,
-            "right grip": self.robot.rightHand.grip,
-            "both grip": self.robot.gripBoth,
-            "both drop": self.robot.dropBoth,
-            "left drop": self.robot.leftHand.drop,
-            "right drop": self.robot.rightHand.drop,
-            "left buttonA": self.robot.leftHand.buttonA,
-            "right buttonA": self.robot.rightHand.buttonA,
-            "left buttonB": self.robot.leftHand.buttonB,
-            "right buttonB": self.robot.rightHand.buttonB,
-            }
-    
-    def write(self, content):
-        self.file.write(content + '\n')
-    
-    def wait(self, time):
-        return [time, time]
-    
-    def add(self, action, **kwargs):
-        # create the key for this dict entry. Keys should always be time signatures for the keyframe animation
-        key = "time={0:.2f}".format(self.timer)
-        
-        # Check to see which keyword arguments were given with the .add method. Checks common keywords (x, y); 
-        # if none given, just call the method with no arguments
-        if "x" in kwargs and "y" in kwargs:
-            response = self.actions[action](kwargs["x"], kwargs["y"])
-        elif "time" in kwargs:
-            response = self.actions[action](kwargs["time"])
-        elif "amt" in kwargs:
-            response = self.actions[action](kwargs["amt"])
-        else:
-            response = self.actions[action]()
-        response_string = response[0]
-        response_timing = response[1]
-            
-        # if a method returns a list of strings, handle them all here to control timing without holding up the 
-        # rest of the animation. This will auto-add pauses for things like button presses. If it's an int
-        # instead of a string, then wait was called; adjust timer for future events. If it's just a string, 
-        # add to the keyframes!
-        if type(response_string) is list:
-            for item in response_string:
-                key = "time={0:.2f}".format(self.timer)
-                self.keyframes[key] = item
-                self.timer += response_timing
-        elif type(response_string) is int:
-            self.keyframes[key] = ""
-            self.timer += response_timing
-        else:
-            # check to see if there's already a key for the entry. If so, append the next action to the existing 
-            # key. If not, create a new dict key and value
-            try:
-                self.keyframes[key] += "\n"+response_string
-            except KeyError:
-                self.keyframes[key] = response_string
-            self.timer += response_timing
-        
-    def generate_animation(self):
-        self.write("[Sequence Header]")
-        self.write("name={}".format(self.file.name.split(".")[0]))
-        self.write("description={}".format(self.description))
-        self.write("number={}".format(self.sequence_id))
-        self.write('length={}'.format(round(self.timer)))
-        self.write('[Meta]')
-        self.write('robot_model=RoboThespian4')
-        self.write('virtualrobot_id={}'.format(self.id))
-        self.write('virtualrobot_user={}'.format(self.user))
-        self.write('virtualrobot_created={}'.format(self.created))
-        self.write('virtualrobot_modified={}'.format(self.created))
-        self.write('')
-        self.write('[Sequence Events]')
-        for frame, value in self.keyframes.items():
-            self.write(frame)
-            self.write(value)
-            
