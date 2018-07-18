@@ -2,8 +2,41 @@ from random import randint
 from datetime import datetime
         
 class Sequencer:
-    """A sequencer that writes to a FILE. Has a ROBOT and TIMER to keep track of actions. Uses KEYFRAMES 
-       to generate animations. Recognizes ACTIONS to call robot methods"""
+    """Has attr for RoboThespian metadata. Writes sequences to a file recognized by RT.
+    
+    The Sequencer class is what the user primarily interacts with. Users create an
+    instance and add movements using the .add() method. These are appended to a 
+    keyframes dictionary, which gives timing and device instructions in a format
+    recognized by RoboThespian. When the sequence is completed, the user calls
+    generate_animation() to write all of the instructions to the file, which can
+    then be uploaded and played on Rosita.
+    
+    Attributes
+    ----------
+    file : File object
+        A File instance that is written to by generate_animation()
+    robot : Robot object
+        The robot being commanded by the sequencer. See rt_hardware for details
+    user : string
+        VirtualRobot username, for organizing .sequence files & viewing in VirtualRobot
+    id : int
+        VirtualRobot username id,  for organizing on VirtualRobot
+    description : string
+        A brief description of what the animation does or is used for
+    sequence_id : int
+        A 5-digit identifier for the sequence, used by VirtualRobot GUI
+    created : string
+        A string-formatted "datetime" timestamp, used by VirtualRobot GUI
+    modified : string
+        A string-formatted "datetime" timestamp, used by VirtualRobot GUI
+    timer : int
+        Timer used for the KEY of keyframes dict. Begins at 0.00
+    keyframes : dict
+        Keeps track of animation. KEY is timer, VALUE is string of instructions
+    actions : dict
+        A mapping of accepted strings from .add() method to actual robot commands
+    
+    """
     def __init__(self, file, robot, user, id, description):
         self.file = file
         self.robot = robot
@@ -12,6 +45,7 @@ class Sequencer:
         self.description = description
         self.sequence_id = randint(0, 99999)
         self.created = datetime.now().strftime("%Y-%m-%dT%I:%M.%S")
+        self.modified = datetime.now().strftime("%Y-%m-%dT%I:%M.%S")
         self.timer = 0.00
         self.keyframes = {}
         self.actions = {
@@ -77,12 +111,51 @@ class Sequencer:
             }
     
     def write(self, content):
+        """Writes content to file, auto-appending newline to insert line breaks
+        
+        This helper method simply adds the newline character to content so that
+        the file is neatly formatted and organized.
+        
+        """
         self.file.write(content + '\n')
     
     def wait(self, time):
+        """Return a list of two int representing how long to pause the animation
+        
+        Parameters
+        ----------
+        time : int
+            The amount of time, in seconds, to pause the animation
+        
+        Returns
+        -------
+        list
+            0: int
+            1: int
+        
+        """
         return [time, time]
     
     def add(self, action, **kwargs):
+        """Adds new Key/Value pairs to keyframes attr
+        
+        This is the primary method of the Sequencer. It takes in a string and
+        keyword arguments, identifies the robot commands to issue, passes along
+        relevant arguments, and stores the response. Then, for each element in the
+        response, it generates a new key/value pair in the keyframes dict with a
+        timer value and string of necessary .sequence commands.
+        
+        Parameters
+        ----------
+        action : string
+            The user-defined action to add to the animation. Should be in the form of
+            ("<verb> <noun>", kwargs). Acceptable verbs are "set" or "change". Nouns
+            must be in the form of "left_arm_up", "head_nod", "both_hands_grip", etc.
+        kwargs : kw=(int)
+            Keyword arguments must be either x=__, y=__, time=__, or amt=__ . Values
+            must be int.
+        
+        """
         # create the key for this dict entry. Keys should always be time signatures for the keyframe animation
         key = "time={0:.2f}".format(self.timer)
         
@@ -121,6 +194,15 @@ class Sequencer:
             self.timer += response_timing
         
     def generate_animation(self):
+        """Outputs text to the file given on instantiation. Call after done using .add()
+        
+        This method actually writes to the .sequence file. It first writes metadata
+        for the VirtualRobot/RoboThespian visual interfaces to keep organized. It then
+        iterates over the keyframes attribute to write headings for each keyframe in
+        the format of "time=0.00" and then write robot commands that can be read by
+        RoboThespian ("L Arm Out=1800")
+        
+        """
         self.write("[Sequence Header]")
         self.write("name={}".format(self.file.name.split(".")[0]))
         self.write("description={}".format(self.description))
@@ -131,7 +213,7 @@ class Sequencer:
         self.write('virtualrobot_id={}'.format(self.id))
         self.write('virtualrobot_user={}'.format(self.user))
         self.write('virtualrobot_created={}'.format(self.created))
-        self.write('virtualrobot_modified={}'.format(self.created))
+        self.write('virtualrobot_modified={}'.format(self.modified))
         self.write('')
         self.write('[Sequence Events]')
         for frame, value in self.keyframes.items():
