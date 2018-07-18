@@ -39,6 +39,8 @@ Actions:
 seq.add("default")
 seq.add("both grip")
 seq.add("look point forward")
+seq.add("left aim", x=1500, y=-50)
+seq.add("left trigger")
 seq.add("change head turn", amt=100)
 seq.add("change head turn", amt=-80)
 seq.add("both drop")

@@ -8,6 +8,35 @@ def check_timing(diff):
     elif abs(diff) >= 300:
         time = 2
     return time
+    
+def limit_value(val):
+    """Return an int between 0 and 100
+    
+    Parameters
+    ----------
+    val : int
+        val is the requested value for a movement. Nearly all robot methods accept
+        values between 0 and 100, so this helper function verifies that any requested
+        values are within this range. If the requested value is greater than 100 or 
+        less than 0, the function returns 100 or 0, respectively. Otherwise, it simply
+        returns the value requested.
+        
+    Returns
+    -------
+    int
+        A number between 0 and 100
+    
+    """
+    if val > 100:
+        print("Values must be between 0 and 100.")
+        print("Requested value, {}, exceeded maximum. Setting to 100".format(val))
+        return 100
+    elif val < 0:
+        print("Values must be between 0 and 100.")
+        print("Requested value, {}, exceeded minimum. Setting to 0".format(val))
+        return 0
+    else:
+        return val
 
 class Head:
     """Has nod, turn, and roll attr. Can set_ or change_ any of these attr, given an amt
@@ -115,6 +144,8 @@ class Head:
         time = 0.40
         
 		# Convert requested x and y values to percentages of possible nod/turn range
+        x = limit_value(x)
+        y = limit_value(y)
         mapX = round(x / 100 * self.TURN_RANGE)
         mapY = round(y / 100 * self.NOD_RANGE)
         
@@ -162,6 +193,7 @@ class Head:
         """
         string = ""
         time = 0.0
+        amt = limit_value(amt)
         map = round(amt / 100 * self.NOD_RANGE)
         if self.nod != self.NOD_MIN+map:
             diff = self.nod - (self.NOD_MIN+map)
@@ -188,6 +220,7 @@ class Head:
         """
         string = ""
         time = 0.0
+        amt = limit_value(amt)
         map = round(amt / 100 * self.TURN_RANGE)
         if self.turn != self.TURN_MIN+map:
             diff = self.turn - (self.TURN_MIN+map)
@@ -214,6 +247,7 @@ class Head:
         """
         string = ""
         time = 0.0
+        amt = limit_value(amt)
         map = round(amt / 100 * self.ROLL_RANGE)
         if self.roll != self.ROLL_MIN+map:
             diff = self.roll - (self.ROLL_MIN+map)
@@ -420,6 +454,8 @@ class Torso:
         """
         string = ""
         time = 0.40
+        x = limit_value(x)
+        y = limit_value(y)
         mapX = round(x / 100 * self.TURN_RANGE)
         mapY = round(y / 100 * self.BENDFORWARD_RANGE)
         if self.TURN_MIN+mapX != self.turn:
@@ -455,6 +491,7 @@ class Torso:
         """
         string = ""
         time = 0.0
+        amt = limit_value(amt)
         map = round(amt / 100 * self.TURN_RANGE)
         if self.turn != self.TURN_MIN+map:
             diff = self.turn - (self.TURN_MIN+map)
@@ -481,6 +518,7 @@ class Torso:
         """
         string = ""
         time = 0.0
+        amt = limit_value(amt)
         map = round(amt / 100 * self.BENDFORWARD_RANGE)
         if self.bendForward != self.BENDFORWARD_MIN+map:
             diff = self.bendForward - (self.BENDFORWARD_MIN+map)
@@ -507,6 +545,7 @@ class Torso:
         """
         string = ""
         time = 0.0
+        amt = limit_value(amt)
         map = round(amt / 100 * self.SIDEWAYS_RANGE)
         if self.sideways != self.SIDEWAYS_MIN+map:
             diff = self.sideways - (self.SIDEWAYS_MIN+map)
@@ -765,6 +804,8 @@ class Arm:
         """
         string = ""
         time = 0.40
+        x = limit_value(x)
+        y = limit_value(y)
         mapX = round(x / 100 * self.OUT_RANGE)
         mapY = round(y / 100 * self.UP_RANGE)
         elbow = round(1.05 ** y * 4)
@@ -803,6 +844,7 @@ class Arm:
         """
         string = ""
         time = 0.0
+        amt = limit_value(amt)
         map = round(amt / 100 * self.UP_RANGE)
         if self.up != self.UP_MIN+map:
             diff = self.up - (self.UP_MIN+map)
@@ -829,6 +871,7 @@ class Arm:
         """
         string = ""
         time = 0.0
+        amt = limit_value(amt)
         map = round(amt / 100 * self.OUT_RANGE)
         if self.out != self.OUT_MIN+map:
             diff = self.out - (self.OUT_MIN+map)
@@ -855,6 +898,7 @@ class Arm:
         """
         string = ""
         time = 0.0
+        amt = limit_value(amt)
         map = round(amt / 100 * self.TWIST_RANGE)
         if self.twist != self.TWIST_MIN+map:
             diff = self.twist - (self.TWIST_MIN+map)
@@ -881,6 +925,7 @@ class Arm:
         """
         string = ""
         time = 0.0
+        amt = limit_value(amt)
         map = round(amt / 100 * self.FOREARM_RANGE)
         if self.foreArm != self.FOREARM_MIN+map:
             diff = self.foreArm - (self.FOREARM_MIN+map)
@@ -907,6 +952,7 @@ class Arm:
         """
         string = ""
         time = 0.0
+        amt = limit_value(amt)
         map = round(amt / 100 * self.ELBOW_RANGE)
         if self.elbow != self.ELBOW_MIN+map:
             diff = self.elbow - (self.ELBOW_MIN+map)
@@ -933,6 +979,7 @@ class Arm:
         """
         string = ""
         time = 0.0
+        amt = limit_value(amt)
         map = round(amt / 100 * self.WRIST_RANGE)
         if self.wrist != self.WRIST_MIN+map:
             diff = self.wrist - (self.WRIST_MIN+map)
