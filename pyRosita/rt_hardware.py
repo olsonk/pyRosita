@@ -38,6 +38,44 @@ def limit_value(val):
     else:
         return val
 
+def limit_change(amt, current, max, min):
+    """Returns an int for new robot device setting, within required min/max values
+    
+    This helper function accepts information about a given attribute, along with
+    a requested 'change' amount, and guarantees that the requested value is within
+    allowable limits.
+    
+    Parameters
+    ----------
+    amt : int
+        The amount of change requested; may be between -100 and 100
+    current : int
+        The current value of the attribute being changed
+    max : int
+        The maximum allowable value for the attribute being changed
+    min : int
+        The minimum allowable value for the attribute being changed
+        
+    Returns
+    -------
+    int
+        The value requested, guaranteeing it is within the allowable bounds of the attr
+    
+    """
+    if current+amt <= max and current+amt >= min:
+        new = current + amt
+        return new
+    elif current+amt > max:
+        new = max
+        print("Requested value of {}. Maximum allowable is {}".format(current+amt, max))
+        print("Setting value to {}".format(max))
+        return new
+    elif current+amt < min:
+        new = min
+        print("Requested value of {}. Minimum allowable is {}".format(current+amt, min))
+        print("Setting value to {}".format(min))
+        return new
+
 class Head:
     """Has nod, turn, and roll attr. Can set_ or change_ any of these attr, given an amt
     
@@ -277,14 +315,7 @@ class Head:
         map = round(amt / 100 * self.NOD_RANGE)
         if amt != 0:
             time = check_timing(map)
-            if self.nod+map <= self.NOD_MAX and self.nod+map >= self.NOD_MIN:
-                self.nod += map
-            elif self.nod+map > self.NOD_MAX:
-                self.nod = self.NOD_MAX
-                print("Went past maximum 'nod' value; setting 'nod' to max.")
-            elif self.nod+map < self.NOD_MIN:
-                self.nod = self.NOD_MIN
-                print("Went past minimum 'nod' value; setting 'nod' to min.")
+            self.nod = limit_change(map, self.nod, self.NOD_MAX, self.NOD_MIN)
             string += "Head Nod={}\n".format(self.nod)
         return [string, time]
         
@@ -309,14 +340,7 @@ class Head:
         map = round(amt / 100 * self.TURN_RANGE)
         if amt != 0:
             time = check_timing(map)
-            if self.turn+map <= self.TURN_MAX and self.turn+map >= self.TURN_MIN:
-                self.turn += map
-            elif self.turn+map > self.TURN_MAX:
-                self.turn = self.TURN_MAX
-                print("Went past maximum 'turn' value; setting 'turn' to max.")
-            elif self.turn+map < self.TURN_MIN:
-                self.turn = self.TURN_MIN
-                print("Went past minimum 'turn' value; setting 'turn' to min.")
+            self.turn = limit_change(map, self.turn, self.TURN_MAX, self.TURN_MIN)
             string += "Head Turn={}\n".format(self.turn)
         return [string, time]
         
@@ -341,14 +365,7 @@ class Head:
         map = round(amt / 100 * self.ROLL_RANGE)
         if amt != 0:
             time = check_timing(map)
-            if self.roll+map <= self.ROLL_MAX and self.roll+map >= self.ROLL_MIN:
-                self.roll += map
-            elif self.roll+map > self.ROLL_MAX:
-                self.roll = self.ROLL_MAX
-                print("Went past maximum 'roll' value; setting 'roll' to max.")
-            elif self.roll+map < self.ROLL_MIN:
-                self.roll = self.ROLL_MIN
-                print("Went past minimum 'roll' value; setting 'roll' to min.")
+            self.roll = limit_change(map, self.roll, self.ROLL_MAX, self.ROLL_MIN)
             string += "Head Roll={}\n".format(self.roll)
         return [string, time]
         
@@ -575,14 +592,7 @@ class Torso:
         map = round(amt / 100 * self.TURN_RANGE)
         if amt != 0:
             time = check_timing(map)
-            if self.turn+map <= self.TURN_MAX and self.turn+map >= self.TURN_MIN:
-                self.turn += map
-            elif self.turn+map > self.TURN_MAX:
-                self.turn = self.TURN_MAX
-                print("Went past maximum 'turn' value; setting 'turn' to max.")
-            elif self.turn+map < self.TURN_MIN:
-                self.turn = self.TURN_MIN
-                print("Went past minimum 'turn' value; setting 'turn' to min.")
+            self.turn = limit_change(map, self.turn, self.TURN_MAX, self.TURN_MIN)
             string += "Torso Turn={}\n".format(self.turn)
         return [string, time]
     
@@ -607,14 +617,7 @@ class Torso:
         map = round(amt / 100 * self.BENDFORWARD_RANGE)
         if amt != 0:
             time = check_timing(map)
-            if self.bendForward+map <= self.BENDFORWARD_MAX and self.bendForward+map >= self.BENDFORWARD_MIN:
-                self.bendForward += map
-            elif self.bendForward+map > self.BENDFORWARD_MAX:
-                self.bendForward = self.BENDFORWARD_MAX
-                print("Went past maximum 'bendForward' value; setting 'bendForward' to max.")
-            elif self.bendForward+map < self.BENDFORWARD_MIN:
-                self.bendForward = self.BENDFORWARD_MIN
-                print("Went past minimum 'bendForward' value; setting 'bendForward' to min.")
+            self.bendForward = limit_change(map, self.bendForward, self.BENDFORWARD_MAX, self.BENDFORWARD_MIN)
             string += "Torso Bend Forward={}\n".format(self.bendForward)
         return [string, time]
         
@@ -639,14 +642,7 @@ class Torso:
         map = round(amt / 100 * self.SIDEWAYS_RANGE)
         if amt != 0:
             time = check_timing(map)
-            if self.sideways+map <= self.SIDEWAYS_MAX and self.sideways+map >= self.SIDEWAYS_MIN:
-                self.sideways += map
-            elif self.sideways+map > self.SIDEWAYS_MAX:
-                self.sideways = self.SIDEWAYS_MAX
-                print("Went past maximum 'sideways' value; setting 'sideways' to max.")
-            elif self.sideways+map < self.SIDEWAYS_MIN:
-                self.sideways = self.SIDEWAYS_MIN
-                print("Went past minimum 'sideways' value; setting 'sideways' to min.")
+            self.sideways = limit_change(map, self.sideways, self.SIDEWAYS_MAX, self.SIDEWAYS_MIN)
             string += "Torso Sideways={}\n".format(self.sideways)
         return [string, time]
     
@@ -1009,14 +1005,7 @@ class Arm:
         map = round(amt / 100 * self.UP_RANGE)
         if amt != 0:
             time = check_timing(map)
-            if self.up+map <= self.UP_MAX and self.up+map >= self.UP_MIN:
-                self.up += map
-            elif self.up+map > self.UP_MAX:
-                self.up = self.UP_MAX
-                print("Went past maximum 'up' value; setting 'up' to max.")
-            elif self.up+map < self.UP_MIN:
-                self.up = self.UP_MIN
-                print("Went past minimum 'up' value; setting 'up' to min.")
+            self.up = limit_change(map, self.up, self.UP_MAX, self.UP_MIN)
             string += "{} Arm Up={}\n".format(self.side, self.up)
         return [string, time]
         
@@ -1041,14 +1030,7 @@ class Arm:
         map = round(amt / 100 * self.OUT_RANGE)
         if amt != 0:
             time = check_timing(map)
-            if self.out+map <= self.OUT_MAX and self.out+map >= self.OUT_MIN:
-                self.out += map
-            elif self.out+map > self.OUT_MAX:
-                self.out = self.OUT_MAX
-                print("Went past maximum 'out' value; setting 'out' to max.")
-            elif self.out+map < self.OUT_MIN:
-                self.out = self.OUT_MIN
-                print("Went past minimum 'out' value; setting 'out' to min.")
+            self.out = limit_change(map, self.out, self.OUT_MAX, self.OUT_MIN)
             string += "{} Arm Out={}\n".format(self.side, self.out)
         return [string, time]
         
@@ -1073,14 +1055,7 @@ class Arm:
         map = round(amt / 100 * self.TWIST_RANGE)
         if amt != 0:
             time = check_timing(map)
-            if self.twist+map <= self.TWIST_MAX and self.twist+map >= self.TWIST_MIN:
-                self.twist += map
-            elif self.twist+map > self.TWIST_MAX:
-                self.twist = self.TWIST_MAX
-                print("Went past maximum 'twist' value; setting 'twist' to max.")
-            elif self.twist+map < self.TWIST_MIN:
-                self.twist = self.TWIST_MIN
-                print("Went past minimum 'twist' value; setting 'twist' to min.")
+            self.twist = limit_change(map, self.twist, self.TWIST_MAX, self.TWIST_MIN)
             string += "{} Arm Twist={}\n".format(self.side, self.twist)
         return [string, time]
         
@@ -1105,14 +1080,7 @@ class Arm:
         map = round(amt / 100 * self.FOREARM_RANGE)
         if amt != 0:
             time = check_timing(map)
-            if self.foreArm+map <= self.FOREARM_MAX and self.foreArm+map >= self.FOREARM_MIN:
-                self.foreArm += map
-            elif self.foreArm+map > self.FOREARM_MAX:
-                self.foreArm = self.FOREARM_MAX
-                print("Went past maximum 'foreArm' value; setting 'foreArm' to max.")
-            elif self.foreArm+map < self.FOREARM_MIN:
-                self.foreArm = self.FOREARM_MIN
-                print("Went past minimum 'foreArm' value; setting 'foreArm' to min.")
+            self.foreArm = limit_change(map, self.foreArm, self.FOREARM_MAX, self.FOREARM_MIN)
             string += "{} Fore Arm Rotate={}\n".format(self.side, self.foreArm)
         return [string, time]
         
@@ -1137,14 +1105,7 @@ class Arm:
         map = round(amt / 100 * self.ELBOW_RANGE)
         if amt != 0:
             time = check_timing(map)
-            if self.elbow+map <= self.ELBOW_MAX and self.elbow+map >= self.ELBOW_MIN:
-                self.elbow += map
-            elif self.elbow+map > self.ELBOW_MAX:
-                self.elbow = self.ELBOW_MAX
-                print("Went past maximum 'elbow' value; setting 'elbow' to max.")
-            elif self.elbow+map < self.ELBOW_MIN:
-                self.elbow = self.ELBOW_MIN
-                print("Went past minimum 'elbow' value; setting 'elbow' to min.")
+            self.elbow = limit_change(map, self.elbow, self.ELBOW_MAX, self.ELBOW_MIN)
             string += "{} Arm Elbow={}\n".format(self.side, self.elbow)
         return [string, time]
         
@@ -1169,14 +1130,7 @@ class Arm:
         map = round(amt / 100 * self.WRIST_RANGE)
         if amt != 0:
             time = check_timing(map)
-            if self.wrist+map <= self.WRIST_MAX and self.wrist+map >= self.WRIST_MIN:
-                self.wrist += map
-            elif self.wrist+map > self.WRIST_MAX:
-                self.wrist = self.WRIST_MAX
-                print("Went past maximum 'wrist' value; setting 'wrist' to max.")
-            elif self.wrist+map < self.WRIST_MIN:
-                self.wrist = self.WRIST_MIN
-                print("Went past minimum 'wrist' value; setting 'wrist' to min.")
+            self.wrist = limit_change(map, self.wrist, self.WRIST_MAX, self.WRIST_MIN)
             string += "{} Arm Wrist={}\n".format(self.side, self.wrist)
         return [string, time]
 
