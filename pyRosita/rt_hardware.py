@@ -214,6 +214,29 @@ class Head:
         return [string, time]
         
     def set(self, part, amt):
+        """Return string (formatted for .sequence file) and int (amount of time needed)
+        
+        This method is used to set a Head attribute to a specified value. It accepts
+        an attribute name and a value (should be from 0-100), then adds onto a string
+        in a format that can be read by Virtual Robot and with a timing value 
+        appropriate for the distance the head needs to move.
+        
+        Parameters
+        ----------
+        attr : string
+            The attribute of the head that being set. Must be "nod", "turn", or "roll"
+        
+        amt : int
+            The requested attribute value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         amt = limit_value(amt)
@@ -241,89 +264,31 @@ class Head:
         else:
             print("Must specify an attribute of 'nod', 'turn', or 'roll'")
         return [string, time]  
-        
-    def set_nod(self, amt):
-        """Set head nod value to given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The requested 'nod' value. Must be between 0 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        amt = limit_value(amt)
-        map = round(amt / 100 * self.NOD_RANGE)
-        if self.nod != self.NOD_MIN+map:
-            diff = self.nod - (self.NOD_MIN+map)
-            time = check_timing(diff)
-            self.nod = self.NOD_MIN + map
-            string += "Head Nod={}\n".format(self.nod)
-        return [string, time]
-        
-    def set_turn(self, amt):
-        """Set head turn value to given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The requested 'turn' value. Must be between 0 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        amt = limit_value(amt)
-        map = round(amt / 100 * self.TURN_RANGE)
-        if self.turn != self.TURN_MIN+map:
-            diff = self.turn - (self.TURN_MIN+map)
-            time = check_timing(diff)
-            self.turn = self.TURN_MIN + map
-            string += "Head Turn={}\n".format(self.turn)
-        return [string, time]
-        
-    def set_roll(self, amt):
-        """Set head roll value to given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The requested 'roll' value. Must be between 0 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        amt = limit_value(amt)
-        map = round(amt / 100 * self.ROLL_RANGE)
-        if self.roll != self.ROLL_MIN+map:
-            diff = self.roll - (self.ROLL_MIN+map)
-            time = check_timing(diff)
-            self.roll = self.ROLL_MIN + map
-            string += "Head Roll={}\n".format(self.roll)
-        return [string, time]
-    
+            
     def change(self, part, amt):
+        """Return string (formatted for .sequence file) and int (amount of time needed)
+        
+        This method is used to change a Head attribute by a specified value. It accepts
+        an attribute name and a value (should be from -100-100), then adds onto a string
+        in a format that can be read by Virtual Robot and with a timing value 
+        appropriate for the distance the head needs to move.
+        
+        Parameters
+        ----------
+        attr : string
+            The attribute of the head that being set. Must be "nod", "turn", or "roll"
+        
+        amt : int
+            The requested attribute value. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         if part == "nod":
@@ -347,82 +312,7 @@ class Head:
         else:
             print("Must specify an attribute of 'nod', 'turn', or 'roll'")
         return [string, time]
-    
-    def change_nod(self, amt):
-        """Change head nod value by given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The difference in 'nod' requested. Must be between -100 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        map = round(amt / 100 * self.NOD_RANGE)
-        if amt != 0:
-            time = check_timing(map)
-            self.nod = limit_change(map, self.nod, self.NOD_MAX, self.NOD_MIN)
-            string += "Head Nod={}\n".format(self.nod)
-        return [string, time]
-        
-    def change_turn(self, amt):
-        """Change head turn value by given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The difference in 'turn' requested. Must be between -100 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        map = round(amt / 100 * self.TURN_RANGE)
-        if amt != 0:
-            time = check_timing(map)
-            self.turn = limit_change(map, self.turn, self.TURN_MAX, self.TURN_MIN)
-            string += "Head Turn={}\n".format(self.turn)
-        return [string, time]
-        
-    def change_roll(self, amt):
-        """Change head roll value by given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The difference in 'roll' requested. Must be between -100 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        map = round(amt / 100 * self.ROLL_RANGE)
-        if amt != 0:
-            time = check_timing(map)
-            self.roll = limit_change(map, self.roll, self.ROLL_MAX, self.ROLL_MIN)
-            string += "Head Roll={}\n".format(self.roll)
-        return [string, time]
-        
+            
 class Torso:
     """Has turn, bendForward, and sideways attr that can be set, given an amt
     
@@ -545,6 +435,30 @@ class Torso:
         return [string, time]
         
     def set(self, part, amt):
+        """Return string (formatted for .sequence file) and int (amount of time needed)
+        
+        This method is used to set a Torso attribute to a specified value. It accepts
+        an attribute name and a value (should be from 0-100), then adds onto a string
+        in a format that can be read by Virtual Robot and with a timing value 
+        appropriate for the distance the torso needs to move.
+        
+        Parameters
+        ----------
+        attr : string
+            The attribute of the torso that is being set. Must be "bend_forward", 
+            "sideways", or "turn"
+        
+        amt : int
+            The requested attribute value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         amt = limit_value(amt)
@@ -573,88 +487,31 @@ class Torso:
             print("Must specify an attribute of 'bend_forward', 'turn', or 'sideways'")
         return [string, time]    
             
-    def set_turn(self, amt):
-        """Set torso turn value to given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The requested 'turn' value. Must be between 0 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        amt = limit_value(amt)
-        map = round(amt / 100 * self.TURN_RANGE)
-        if self.turn != self.TURN_MIN+map:
-            diff = self.turn - (self.TURN_MIN+map)
-            time = check_timing(diff)
-            self.turn = self.TURN_MIN + map
-            string += "Torso Turn={}\n".format(self.turn)
-        return [string, time]
-        
-    def set_bendForward(self, amt):
-        """Set torso bendForward value to given amt; return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The requested 'bendForward' value. Must be between 0 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        amt = limit_value(amt)
-        map = round(amt / 100 * self.BENDFORWARD_RANGE)
-        if self.bendForward != self.BENDFORWARD_MIN+map:
-            diff = self.bendForward - (self.BENDFORWARD_MIN+map)
-            time = check_timing(diff)
-            self.bendForward = self.BENDFORWARD_MIN + map
-            string += "Torso Bend Forward={}\n".format(self.bendForward)
-        return [string, time]
-        
-    def set_sideways(self, amt):
-        """Set torso sideways value to given amount; return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The requested 'sideways' value. Must be between 0 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        amt = limit_value(amt)
-        map = round(amt / 100 * self.SIDEWAYS_RANGE)
-        if self.sideways != self.SIDEWAYS_MIN+map:
-            diff = self.sideways - (self.SIDEWAYS_MIN+map)
-            time = check_timing(diff)
-            self.sideways = self.SIDEWAYS_MIN + map
-            string += "Torso Sidways={}\n".format(self.sideways)
-        return [string, time]
-
     def change(self, part, amt):
+        """Return string (formatted for .sequence file) and int (amount of time needed)
+        
+        This method is used to change a Torso attribute by a specified value. It accepts
+        an attribute name and a value (should be from -100-100), then adds onto a string
+        in a format that can be read by Virtual Robot and with a timing value 
+        appropriate for the distance the torso needs to move.
+        
+        Parameters
+        ----------
+        attr : string
+            The attribute of the torso that is being changed. Must be "bend_forward", 
+            "sideways", or "turn"
+        
+        amt : int
+            The requested attribute value. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         amt = limit_value(amt)
@@ -679,85 +536,9 @@ class Torso:
         else:
             print("Must specify an attribute of 'bend_forward', 'turn', or 'sideways'")
         return [string, time]
-    
-    def change_turn(self, amt):
-        """Change torso turn value by given amount and return a list with a string and int
         
-        Parameters
-        ----------
-        amt : int
-            The difference in 'turn' value requested. Must be between -100 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        map = round(amt / 100 * self.TURN_RANGE)
-        if amt != 0:
-            time = check_timing(map)
-            self.turn = limit_change(map, self.turn, self.TURN_MAX, self.TURN_MIN)
-            string += "Torso Turn={}\n".format(self.turn)
-        return [string, time]
-    
-    def change_bendForward(self, amt):
-        """Change torso bendForward value by given amt; return a list w a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The difference in 'bendForward' value requested. Must be between -100 & 100
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        map = round(amt / 100 * self.BENDFORWARD_RANGE)
-        if amt != 0:
-            time = check_timing(map)
-            self.bendForward = limit_change(map, self.bendForward, self.BENDFORWARD_MAX, self.BENDFORWARD_MIN)
-            string += "Torso Bend Forward={}\n".format(self.bendForward)
-        return [string, time]
-        
-    def change_sideways(self, amt):
-        """Change torso sideways value by given amt; return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The difference in 'sideways' value requested. Must be between -100 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        map = round(amt / 100 * self.SIDEWAYS_RANGE)
-        if amt != 0:
-            time = check_timing(map)
-            self.sideways = limit_change(map, self.sideways, self.SIDEWAYS_MAX, self.SIDEWAYS_MIN)
-            string += "Torso Sideways={}\n".format(self.sideways)
-        return [string, time]
-    
 class Arm:
-    """Has up, out, twist, foreArm, elbow, and wrist attr. Can set_ or change_ any of 
-       these attr, given an amt
+    """Has up, out, twist, foreArm, elbow, and wrist attr. Can set or change with an amt
     
     The Arm class has six movements: 
     - up (raising/lowering arm perpendicular to torso), 
@@ -768,7 +549,7 @@ class Arm:
     - and wrist (bending the hand palm out or palm in). 
     Each of these values has a min and max value. This class also includes methods for 
     getting current values, resetting them to 'default' position, a complex 'move' 
-    method for changing the nod and turn, and set_ / change_ methods for granular 
+    method for changing the nod and turn, and set / change methods for granular 
     control of each attribute.
     
     Attributes
@@ -931,46 +712,70 @@ class Arm:
             string += "{} Arm Twist={}\n".format(self.side, self.twist)
         return [string, time]
 	
-    def set(self, part, amt):
+    def set(self, attr, amt):
+        """Return string (formatted for .sequence file) and int (amount of time needed)
+        
+        This method is used to set an Arm attribute to a specified value. It accepts
+        an attribute name and a value (should be from 0-100), then adds onto a string
+        in a format that can be read by Virtual Robot and with a timing value 
+        appropriate for the distance the arm needs to move.
+        
+        Parameters
+        ----------
+        attr : string
+            The attribute of the arm that is being set. Must be "up", "out", "twist",
+            "fore_arm", "elbow", or "wrist"
+        
+        amt : int
+            The requested attribute value. Must be between 0 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         amt = limit_value(amt)
-        if part == "up":
+        if attr == "up":
             map = round(amt / 100 * self.UP_RANGE)
             if self.up != self.UP_MIN+map:
                 diff = self.up - (self.UP_MIN+map)
                 time = check_timing(diff)
                 self.up = self.UP_MIN + map
                 string += "{} Arm Up={}\n".format(self.side, self.up)
-        elif part == "out":
+        elif attr == "out":
             map = round(amt / 100 * self.OUT_RANGE)
             if self.out != self.OUT_MIN+map:
                 diff = self.out - (self.OUT_MIN+map)
                 time = check_timing(diff)
                 self.out = self.OUT_MIN + map
                 string += "{} Arm Out={}\n".format(self.side, self.out)
-        elif part == "twist":
+        elif attr == "twist":
             map = round(amt / 100 * self.TWIST_RANGE)
             if self.twist != self.TWIST_MIN+map:
                 diff = self.twist - (self.TWIST_MIN+map)
                 time = check_timing(diff)
                 self.twist = self.TWIST_MIN + map
                 string += "{} Arm Twist={}\n".format(self.side, self.twist)
-        elif part == "fore_arm":
+        elif attr == "fore_arm":
             map = round(amt / 100 * self.FOREARM_RANGE)
             if self.foreArm != self.FOREARM_MIN+map:
                 diff = self.foreArm - (self.FOREARM_MIN+map)
                 time = check_timing(diff)
                 self.foreArm = self.FOREARM_MIN + map
                 string += "{} Fore Arm Rotate={}\n".format(self.side, self.foreArm)
-        elif part == "elbow":
+        elif attr == "elbow":
             map = round(amt / 100 * self.ELBOW_RANGE)
             if self.elbow != self.ELBOW_MIN+map:
                 diff = self.elbow - (self.ELBOW_MIN+map)
                 time = check_timing(diff)
                 self.elbow = self.ELBOW_MIN + map
                 string += "{} Arm Elbow={}\n".format(self.side, self.elbow)
-        elif part == "wrist":
+        elif attr == "wrist":
             map = round(amt / 100 * self.WRIST_RANGE)
             if self.wrist != self.WRIST_MIN+map:
                 diff = self.wrist - (self.WRIST_MIN+map)
@@ -981,169 +786,31 @@ class Arm:
             print("Must specify an attribute of 'up', 'out', 'twist', 'fore_arm', 'elbow', or 'wrist'")
         return [string, time]
     
-    def set_up(self, amt):
-        """Set arm up value to given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The requested 'up' value. Must be between 0 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        amt = limit_value(amt)
-        map = round(amt / 100 * self.UP_RANGE)
-        if self.up != self.UP_MIN+map:
-            diff = self.up - (self.UP_MIN+map)
-            time = check_timing(diff)
-            self.up = self.UP_MIN + map
-            string += "{} Arm Up={}\n".format(self.side, self.up)
-        return [string, time]
-    
-    def set_out(self, amt):
-        """Set arm out value to given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The requested 'out' value. Must be between 0 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        amt = limit_value(amt)
-        map = round(amt / 100 * self.OUT_RANGE)
-        if self.out != self.OUT_MIN+map:
-            diff = self.out - (self.OUT_MIN+map)
-            time = check_timing(diff)
-            self.out = self.OUT_MIN + map
-            string += "{} Arm Out={}\n".format(self.side, self.out)
-        return [string, time]
-    
-    def set_twist(self, amt):
-        """Set arm twist value to given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The requested 'twist' value. Must be between 0 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        amt = limit_value(amt)
-        map = round(amt / 100 * self.TWIST_RANGE)
-        if self.twist != self.TWIST_MIN+map:
-            diff = self.twist - (self.TWIST_MIN+map)
-            time = check_timing(diff)
-            self.twist = self.TWIST_MIN + map
-            string += "{} Arm Twist={}\n".format(self.side, self.twist)
-        return [string, time]
-        
-    def set_foreArm(self, amt):
-        """Set forearm rotate value to given amount; return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The requested 'foreArm' value. Must be between 0 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        amt = limit_value(amt)
-        map = round(amt / 100 * self.FOREARM_RANGE)
-        if self.foreArm != self.FOREARM_MIN+map:
-            diff = self.foreArm - (self.FOREARM_MIN+map)
-            time = check_timing(diff)
-            self.foreArm = self.FOREARM_MIN + map
-            string += "{} Fore Arm Rotate={}\n".format(self.side, self.foreArm)
-        return [string, time]
-    
-    def set_elbow(self, amt):
-        """Set arm's elbow value to given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The requested 'elbow' value. Must be between 0 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        amt = limit_value(amt)
-        map = round(amt / 100 * self.ELBOW_RANGE)
-        if self.elbow != self.ELBOW_MIN+map:
-            diff = self.elbow - (self.ELBOW_MIN+map)
-            time = check_timing(diff)
-            self.elbow = self.ELBOW_MIN + map
-            string += "{} Arm Elbow={}\n".format(self.side, self.elbow)
-        return [string, time]
-    
-    def set_wrist(self, amt):
-        """Set arm's wrist value to given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The requested 'wrist' value. Must be between 0 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        amt = limit_value(amt)
-        map = round(amt / 100 * self.WRIST_RANGE)
-        if self.wrist != self.WRIST_MIN+map:
-            diff = self.wrist - (self.WRIST_MIN+map)
-            time = check_timing(diff)
-            self.wrist = self.WRIST_MIN + map
-            string += "{} arm Wrist={}\n".format(self.side, self.wrist)
-        return [string, time]
-
     def change(self, part, amt):
+        """Return string (formatted for .sequence file) and int (amount of time needed)
+        
+        This method is used to change an Arm attribute by a specified value. It accepts
+        an attribute name and a value (should be from -100 to 100), then adds onto a 
+        string in a format that can be read by Virtual Robot and with a timing value 
+        appropriate for the distance the arm needs to move.
+        
+        Parameters
+        ----------
+        attr : string
+            The attribute of the arm that is being set. Must be "up", "out", "twist",
+            "fore_arm", "elbow", or "wrist"
+        
+        amt : int
+            The requested change amount. Must be between -100 and 100.
+
+        Returns
+        -------
+        list
+            0: string
+                A string of all sequence actions to be added to the file
+            1: int
+                The amount of time this action should take to complete
+        """
         string = ""
         time = 0.0
         if part == "up":
@@ -1186,156 +853,6 @@ class Arm:
             print("Must specify an attribute of 'up', 'out', 'twist', 'fore_arm', 'elbow', or 'wrist'")
         return [string, time]
     
-    def change_up(self, amt):
-        """Change arm's up value by given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The difference in 'up' value requested. Must be between -100 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        map = round(amt / 100 * self.UP_RANGE)
-        if amt != 0:
-            time = check_timing(map)
-            self.up = limit_change(map, self.up, self.UP_MAX, self.UP_MIN)
-            string += "{} Arm Up={}\n".format(self.side, self.up)
-        return [string, time]
-        
-    def change_out(self, amt):
-        """Change arm's out value by given amount and return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The difference in 'out' value requested. Must be between -100 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        map = round(amt / 100 * self.OUT_RANGE)
-        if amt != 0:
-            time = check_timing(map)
-            self.out = limit_change(map, self.out, self.OUT_MAX, self.OUT_MIN)
-            string += "{} Arm Out={}\n".format(self.side, self.out)
-        return [string, time]
-        
-    def change_twist(self, amt):
-        """Change arm's twist value by given amount; return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The difference in 'twist' value requested. Must be between -100 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        map = round(amt / 100 * self.TWIST_RANGE)
-        if amt != 0:
-            time = check_timing(map)
-            self.twist = limit_change(map, self.twist, self.TWIST_MAX, self.TWIST_MIN)
-            string += "{} Arm Twist={}\n".format(self.side, self.twist)
-        return [string, time]
-        
-    def change_foreArm(self, amt):
-        """Change arm's foreArm value by given amt; return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The difference in 'foreArm' value requested. Must be between -100 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        map = round(amt / 100 * self.FOREARM_RANGE)
-        if amt != 0:
-            time = check_timing(map)
-            self.foreArm = limit_change(map, self.foreArm, self.FOREARM_MAX, self.FOREARM_MIN)
-            string += "{} Fore Arm Rotate={}\n".format(self.side, self.foreArm)
-        return [string, time]
-        
-    def change_elbow(self, amt):
-        """Change arm's elbow value by given amount; return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The difference in 'elbow' value requested. Must be between -100 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        map = round(amt / 100 * self.ELBOW_RANGE)
-        if amt != 0:
-            time = check_timing(map)
-            self.elbow = limit_change(map, self.elbow, self.ELBOW_MAX, self.ELBOW_MIN)
-            string += "{} Arm Elbow={}\n".format(self.side, self.elbow)
-        return [string, time]
-        
-    def change_wrist(self, amt):
-        """Change arm's wrist value by given amount; return a list with a string and int
-        
-        Parameters
-        ----------
-        amt : int
-            The difference in 'wrist' value requested. Must be between -100 and 100.
-
-        Returns
-        -------
-        list
-            0: string
-                A string of all sequence actions to be added to the file
-            1: int
-                The amount of time this action should take to complete
-        """
-        string = ""
-        time = 0.0
-        map = round(amt / 100 * self.WRIST_RANGE)
-        if amt != 0:
-            time = check_timing(map)
-            self.wrist = limit_change(map, self.wrist, self.WRIST_MAX, self.WRIST_MIN)
-            string += "{} Arm Wrist={}\n".format(self.side, self.wrist)
-        return [string, time]
-
 class Hand:
     """Has index, middle, ring, and baby attr that can be set or toggled
     
