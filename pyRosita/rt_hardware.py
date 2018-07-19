@@ -1,5 +1,21 @@
 def check_timing(diff):
-    """Check the timing of the requested movement. Accepts *diff* between current position and requested position"""
+    """Return a float that is the amount of time needed to move the specified distance
+    
+    This helper function accepts a diff, which is the difference between an
+    attribute's current value and the requested value, and returns the amount
+    of time that will be needed to complete the action.
+    
+    Parameters
+    ----------
+    diff : int
+        The difference between the attribute's current value and the value requested
+    
+    Returns
+    -------
+    float
+        The amount of time that will be needed to complete the requested action
+    
+    """
     time = 0.0
     if abs(diff) > 100 and abs(diff) < 200:
         time = 0.50
