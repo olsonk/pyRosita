@@ -88,9 +88,14 @@ class Sequencer:
         ----------
         action : string
             The user-defined action to add to the animation. Should be in the form of
-            ("<verb> <noun>", kwargs). Acceptable verbs are "set" or "change". Nouns
-            must be in the form of "left_arm_up", "head_nod", "both_hands_grip", etc.
-        kwargs : kw=(int)
+            "<verb> <noun>". Acceptable verbs are "set" or "change".  Nouns must be in 
+            the form of "left_arm_up", "head_nod", "both_hands_grip", etc.
+        *args : int or tuple
+            int
+                The amount being passed to robot .set() or .change()
+            tuple
+                The (x, y) values being sent to robot .move() or .aim()
+        **kwargs : kw=(int)
             Keyword arguments must be either x=__, y=__, time=__, or amt=__ . Values
             must be int.
         
@@ -98,9 +103,12 @@ class Sequencer:
         # create the key for this dict entry. Keys should always be time signatures for the keyframe animation
         key = "time={0:.2f}".format(self.timer)
         
-        command = action.split(" ")
-        verb = command[0]
-        noun = command[1]
+        if " " in action:
+            command = action.split(" ")
+            verb = command[0]
+            noun = command[1]
+        else:
+            verb = ""
         
         if verb == "set":
             if noun == "default":
@@ -215,6 +223,13 @@ class Sequencer:
                 else:
                     print("'{}' requires an 'amt' value that is an int between -100 and 100.".format(action))
                     print("Try again in this format: seq.add('{}', <int>)".format(action))
+        else:
+            print("Sorry, I didn't understand that command. You asked me to {}".format(action))
+            print("To add movements to the sequence, you must use the format seq.add('<verb> <noun>', args)")
+            print("You can say 'set' or 'change', and for nouns you may choose any robot component in snake case")
+            print("Example: seq.add('set left_arm_aim', (75, 6)) or seq.add('set both_trigger')")
+            response = ["", 0]
+        
         response_string = response[0]
         response_timing = response[1]
             
