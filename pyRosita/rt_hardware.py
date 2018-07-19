@@ -1,4 +1,4 @@
-def check_timing(diff):
+def check_timing(diff, range):
     """Return a float that is the amount of time needed to move the specified distance
     
     This helper function accepts a diff, which is the difference between an
@@ -17,11 +17,13 @@ def check_timing(diff):
     
     """
     time = 0.0
-    if abs(diff) > 100 and abs(diff) < 200:
-        time = 0.50
-    elif abs(diff) >= 200 and abs(diff) < 300:
+    if abs(diff) > 0 and abs(diff) < 0.1*range:
+        time = 0.40
+    elif abs(diff) >= 0.1*range and abs(diff) < 0.3*range:
+        time = 0.75
+    elif abs(diff) >= 0.3*range and abs(diff) < 0.6*range:
         time = 1.5
-    elif abs(diff) >= 300:
+    elif abs(diff) >= 0.6*range:
         time = 2
     return time
     
@@ -209,7 +211,7 @@ class Head:
             diff = self.turn - (self.TURN_MIN+mapY)
             
             # determine the time necessary to move this amount, set time to that value
-            time = check_timing(diff)
+            time = check_timing(diff, self.TURN_RANGE)
             
             # set turn to new value
             self.turn = self.TURN_MIN + mapX
@@ -220,10 +222,7 @@ class Head:
         # same as above, but for 'nod' positions
         if self.NOD_MIN+mapY != self.nod:
             diff = self.nod - (self.NOD_MIN+mapY)
-            if abs(diff) > 200 and abs(diff) < 400:
-                time = 0.50
-            elif abs(diff) > 400:
-                time = 0.75
+            time = check_timing(diff, self.NOD_RANGE)
             self.nod = self.NOD_MIN + mapY
             string += "Head Nod={}\n".format(self.nod)
             
@@ -260,21 +259,21 @@ class Head:
             map = round(amt / 100 * self.NOD_RANGE)
             if self.nod != self.NOD_MIN+map:
                 diff = self.nod - (self.NOD_MIN+map)
-                time = check_timing(diff)
+                time = check_timing(diff, self.NOD_RANGE)
                 self.nod = self.NOD_MIN + map
                 string += "Head Nod={}\n".format(self.nod)
         elif part == "turn":
             map = round(amt / 100 * self.TURN_RANGE)
             if self.turn != self.TURN_MIN+map:
                 diff = self.turn - (self.TURN_MIN+map)
-                time = check_timing(diff)
+                time = check_timing(diff, self.TURN_RANGE)
                 self.turn = self.TURN_MIN + map
                 string += "Head Turn={}\n".format(self.turn)
         elif part == "roll":
             map = round(amt / 100 * self.ROLL_RANGE)
             if self.roll != self.ROLL_MIN+map:
                 diff = self.roll - (self.ROLL_MIN+map)
-                time = check_timing(diff)
+                time = check_timing(diff, self.ROLL_RANGE)
                 self.roll = self.ROLL_MIN + map
                 string += "Head Roll={}\n".format(self.roll)
         else:
@@ -310,19 +309,19 @@ class Head:
         if part == "nod":
             map = round(amt / 100 * self.NOD_RANGE)
             if amt != 0:
-                time = check_timing(map)
+                time = check_timing(map, self.NOD_RANGE)
                 self.nod = limit_change(map, self.nod, self.NOD_MAX, self.NOD_MIN)
                 string += "Head Nod={}\n".format(self.nod)
         elif part == "turn":
             map = round(amt / 100 * self.TURN_RANGE)
             if amt != 0:
-                time = check_timing(map)
+                time = check_timing(map, self.TURN_RANGE)
                 self.turn = limit_change(map, self.turn, self.TURN_MAX, self.TURN_MIN)
                 string += "Head Turn={}\n".format(self.turn)
         elif part == "roll":
             map = round(amt / 100 * self.ROLL_RANGE)
             if amt != 0:
-                time = check_timing(map)
+                time = check_timing(map, self.ROLL_RANGE)
                 self.roll = limit_change(map, self.roll, self.ROLL_MAX, self.ROLL_MIN)
                 string += "Head Roll={}\n".format(self.roll)
         else:
@@ -437,15 +436,12 @@ class Torso:
         mapY = round(y / 100 * self.BENDFORWARD_RANGE)
         if self.TURN_MIN+mapX != self.turn:
             diff = self.turn - (self.TURN_MIN+mapX)
-            time = check_timing(diff)
+            time = check_timing(diff, self.TURN_RANGE)
             self.turn = self.TURN_MIN + mapX
             string += "Torso Turn={}\n".format(self.turn)
         if self.BENDFORWARD_MAX-mapY != self.bendForward:
             diff = self.bendForward - (self.BENDFORWARD_MAX-mapY)
-            if abs(diff) > 200 and abs(diff) < 400:
-                time = 0.50
-            elif abs(diff) > 400:
-                time = 0.75
+            time = check_timing(diff, self.BENDFORWARD_RANGE)
             self.bendForward = self.BENDFORWARD_MAX - mapY
             string += "Torso Bend Forward={}\n".format(self.bendForward)
         return [string, time]
@@ -482,21 +478,21 @@ class Torso:
             map = round(amt / 100 * self.BENDFORWARD_RANGE)
             if self.bendForward != self.BENDFORWARD_MIN+map:
                 diff = self.bendForward - (self.BENDFORWARD_MIN+map)
-                time = check_timing(diff)
+                time = check_timing(diff, self.BENDFORWARD_RANGE)
                 self.bendForward = self.BENDFORWARD_MIN + map
                 string += "Torso Bend Forward={}\n".format(self.bendForward)
         elif part == "sideways":
             map = round(amt / 100 * self.SIDEWAYS_RANGE)
             if self.sideways != self.SIDEWAYS_MIN+map:
                 diff = self.sideways - (self.SIDEWAYS_MIN+map)
-                time = check_timing(diff)
+                time = check_timing(diff, self.SIDEWAYS_RANGE)
                 self.sideways = self.SIDEWAYS_MIN + map
                 string += "Torso Sideways={}\n".format(self.sideways)
         elif part == "turn":
             map = round(amt / 100 * self.TURN_RANGE)
             if self.turn != self.TURN_MIN+map:
                 diff = self.turn - (self.TURN_MIN+map)
-                time = check_timing(diff)
+                time = check_timing(diff, self.TURN_RANGE)
                 self.turn = self.TURN_MIN + map
                 string += "Torso Turn={}\n".format(self.turn)
         else:
@@ -533,19 +529,19 @@ class Torso:
         if part == "turn":
             map = round(amt / 100 * self.TURN_RANGE)
             if amt != 0:
-                time = check_timing(map)
+                time = check_timing(map, self.TURN_RANGE)
                 self.turn = limit_change(map, self.turn, self.TURN_MAX, self.TURN_MIN)
                 string += "Torso Turn={}\n".format(self.turn)
         elif part == "bend_forward":
             map = round(amt / 100 * self.BENDFORWARD_RANGE)
             if amt != 0:
-                time = check_timing(map)
+                time = check_timing(map, self.BENDFORWARD_RANGE)
                 self.bendForward = limit_change(map, self.bendForward, self.BENDFORWARD_MAX, self.BENDFORWARD_MIN)
                 string += "Torso Bend Forward={}\n".format(self.bendForward)
         elif part == "sideways":
             map = round(amt / 100 * self.SIDEWAYS_RANGE)
             if amt != 0:
-                time = check_timing(map)
+                time = check_timing(map, self.SIDEWAYS_RANGE)
                 self.sideways = limit_change(map, self.sideways, self.SIDEWAYS_MAX, self.SIDEWAYS_MIN)
                 string += "Torso Sideways={}\n".format(self.sideways)
         else:
@@ -713,14 +709,14 @@ class Arm:
         twist = round(1.05 ** x * 3.75)
         if self.UP_MIN+mapY != self.up:
             diff = self.up - (self.UP_MIN+mapY)
-            time = check_timing(diff)
+            time = check_timing(diff, self.UP_RANGE)
             self.up = self.UP_MIN+mapY
             self.elbow = self.ELBOW_MIN + elbow
             string += "{} Arm Elbow={}\n".format(self.side, self.elbow)
             string += "{} Arm Up={}\n".format(self.side, self.up)
         if self.OUT_MIN+mapX != self.out:
             diff = self.out - (self.OUT_MIN+mapX)
-            time = check_timing(diff)
+            time = check_timing(diff, self.OUT_RANGE)
             self.out = self.OUT_MIN+mapX
             self.twist = self.TWIST_MIN + twist
             string += "{} Arm Out={}\n".format(self.side, self.out)
@@ -759,42 +755,42 @@ class Arm:
             map = round(amt / 100 * self.UP_RANGE)
             if self.up != self.UP_MIN+map:
                 diff = self.up - (self.UP_MIN+map)
-                time = check_timing(diff)
+                time = check_timing(diff, self.UP_RANGE)
                 self.up = self.UP_MIN + map
                 string += "{} Arm Up={}\n".format(self.side, self.up)
         elif attr == "out":
             map = round(amt / 100 * self.OUT_RANGE)
             if self.out != self.OUT_MIN+map:
                 diff = self.out - (self.OUT_MIN+map)
-                time = check_timing(diff)
+                time = check_timing(diff, self.OUT_RANGE)
                 self.out = self.OUT_MIN + map
                 string += "{} Arm Out={}\n".format(self.side, self.out)
         elif attr == "twist":
             map = round(amt / 100 * self.TWIST_RANGE)
             if self.twist != self.TWIST_MIN+map:
                 diff = self.twist - (self.TWIST_MIN+map)
-                time = check_timing(diff)
+                time = check_timing(diff, self.TWIST_RANGE)
                 self.twist = self.TWIST_MIN + map
                 string += "{} Arm Twist={}\n".format(self.side, self.twist)
         elif attr == "fore_arm":
             map = round(amt / 100 * self.FOREARM_RANGE)
             if self.foreArm != self.FOREARM_MIN+map:
                 diff = self.foreArm - (self.FOREARM_MIN+map)
-                time = check_timing(diff)
+                time = check_timing(diff, self.FOREARM_RANGE)
                 self.foreArm = self.FOREARM_MIN + map
                 string += "{} Fore Arm Rotate={}\n".format(self.side, self.foreArm)
         elif attr == "elbow":
             map = round(amt / 100 * self.ELBOW_RANGE)
             if self.elbow != self.ELBOW_MIN+map:
                 diff = self.elbow - (self.ELBOW_MIN+map)
-                time = check_timing(diff)
+                time = check_timing(diff, self.ELBOW_RANGE)
                 self.elbow = self.ELBOW_MIN + map
                 string += "{} Arm Elbow={}\n".format(self.side, self.elbow)
         elif attr == "wrist":
             map = round(amt / 100 * self.WRIST_RANGE)
             if self.wrist != self.WRIST_MIN+map:
                 diff = self.wrist - (self.WRIST_MIN+map)
-                time = check_timing(diff)
+                time = check_timing(diff, self.WRIST_RANGE)
                 self.wrist = self.WRIST_MIN + map
                 string += "{} Arm Wrist={}\n".format(self.side, self.wrist)
         else:
@@ -831,37 +827,37 @@ class Arm:
         if part == "up":
             map = round(amt / 100 * self.UP_RANGE)
             if amt != 0:
-                time = check_timing(map)
+                time = check_timing(map, self.UP_RANGE)
                 self.up = limit_change(map, self.up, self.UP_MAX, self.UP_MIN)
                 string += "{} Arm Up={}\n".format(self.side, self.up)
         elif part == "out":
             map = round(amt / 100 * self.OUT_RANGE)
             if amt != 0:
-                time = check_timing(map)
+                time = check_timing(map, self.OUT_RANGE)
                 self.out = limit_change(map, self.out, self.OUT_MAX, self.OUT_MIN)
                 string += "{} Arm Out={}\n".format(self.side, self.out)
         elif part == "twist":
             map = round(amt / 100 * self.TWIST_RANGE)
             if amt != 0:
-                time = check_timing(map)
+                time = check_timing(map, self.TWIST_RANGE)
                 self.twist = limit_change(map, self.twist, self.TWIST_MAX, self.TWIST_MIN)
                 string += "{} Arm Twist={}\n".format(self.side, self.twist)
         elif part == "fore_arm":
             map = round(amt / 100 * self.FOREARM_RANGE)
             if amt != 0:
-                time = check_timing(map)
+                time = check_timing(map, self.FOREARM_RANGE)
                 self.foreArm = limit_change(map, self.foreArm, self.FOREARM_MAX, self.FOREARM_MIN)
                 string += "{} Fore Arm Rotate={}\n".format(self.side, self.foreArm)
         elif part == "elbow":
             map = round(amt / 100 * self.ELBOW_RANGE)
             if amt != 0:
-                time = check_timing(map)
+                time = check_timing(map, self.ELBOW_RANGE)
                 self.elbow = limit_change(map, self.elbow, self.ELBOW_MAX, self.ELBOW_MIN)
                 string += "{} Arm Elbow={}\n".format(self.side, self.elbow)
         elif part == "wrist":
             map = round(amt / 100 * self.WRIST_RANGE)
             if amt != 0:
-                time = check_timing(map)
+                time = check_timing(map, self.WRIST_RANGE)
                 self.wrist = limit_change(map, self.wrist, self.WRIST_MAX, self.WRIST_MIN)
                 string += "{} Arm Wrist={}\n".format(self.side, self.wrist)
         else:
