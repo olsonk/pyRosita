@@ -213,6 +213,35 @@ class Head:
             
         return [string, time]
         
+    def set(self, part, amt):
+        string = ""
+        time = 0.0
+        amt = limit_value(amt)
+        if part == "nod":
+            map = round(amt / 100 * self.NOD_RANGE)
+            if self.nod != self.NOD_MIN+map:
+                diff = self.nod - (self.NOD_MIN+map)
+                time = check_timing(diff)
+                self.nod = self.NOD_MIN + map
+                string += "Head Nod={}\n".format(self.nod)
+        elif part == "turn":
+            map = round(amt / 100 * self.TURN_RANGE)
+            if self.turn != self.TURN_MIN+map:
+                diff = self.turn - (self.TURN_MIN+map)
+                time = check_timing(diff)
+                self.turn = self.TURN_MIN + map
+                string += "Head Turn={}\n".format(self.turn)
+        elif part == "roll":
+            map = round(amt / 100 * self.ROLL_RANGE)
+            if self.roll != self.ROLL_MIN+map:
+                diff = self.roll - (self.ROLL_MIN+map)
+                time = check_timing(diff)
+                self.roll = self.ROLL_MIN + map
+                string += "Head Roll={}\n".format(self.roll)
+        else:
+            print("Must specify an attribute of 'nod', 'turn', or 'roll'")
+        return [string, time]  
+        
     def set_nod(self, amt):
         """Set head nod value to given amount and return a list with a string and int
         
@@ -292,6 +321,31 @@ class Head:
             time = check_timing(diff)
             self.roll = self.ROLL_MIN + map
             string += "Head Roll={}\n".format(self.roll)
+        return [string, time]
+    
+    def change(self, part, amt):
+        string = ""
+        time = 0.0
+        if part == "nod":
+            map = round(amt / 100 * self.NOD_RANGE)
+            if amt != 0:
+                time = check_timing(map)
+                self.nod = limit_change(map, self.nod, self.NOD_MAX, self.NOD_MIN)
+                string += "Head Nod={}\n".format(self.nod)
+        elif part == "turn":
+            map = round(amt / 100 * self.TURN_RANGE)
+            if amt != 0:
+                time = check_timing(map)
+                self.turn = limit_change(map, self.turn, self.TURN_MAX, self.TURN_MIN)
+                string += "Head Turn={}\n".format(self.turn)
+        elif part == "roll":
+            map = round(amt / 100 * self.ROLL_RANGE)
+            if amt != 0:
+                time = check_timing(map)
+                self.roll = limit_change(map, self.roll, self.ROLL_MAX, self.ROLL_MIN)
+                string += "Head Roll={}\n".format(self.roll)
+        else:
+            print("Must specify an attribute of 'nod', 'turn', or 'roll'")
         return [string, time]
     
     def change_nod(self, amt):
@@ -490,6 +544,35 @@ class Torso:
             string += "Torso Bend Forward={}\n".format(self.bendForward)
         return [string, time]
         
+    def set(self, part, amt):
+        string = ""
+        time = 0.0
+        amt = limit_value(amt)
+        if part == "bend_forward":
+            map = round(amt / 100 * self.BENDFORWARD_RANGE)
+            if self.bendForward != self.BENDFORWARD_MIN+map:
+                diff = self.bendForward - (self.BENDFORWARD_MIN+map)
+                time = check_timing(diff)
+                self.bendForward = self.BENDFORWARD_MIN + map
+                string += "Torso Bend Forward={}\n".format(self.bendForward)
+        elif part == "sideways":
+            map = round(amt / 100 * self.SIDEWAYS_RANGE)
+            if self.sideways != self.SIDEWAYS_MIN+map:
+                diff = self.sideways - (self.SIDEWAYS_MIN+map)
+                time = check_timing(diff)
+                self.sideways = self.SIDEWAYS_MIN + map
+                string += "Torso Sideways={}\n".format(self.sideways)
+        elif part == "turn":
+            map = round(amt / 100 * self.TURN_RANGE)
+            if self.turn != self.TURN_MIN+map:
+                diff = self.turn - (self.TURN_MIN+map)
+                time = check_timing(diff)
+                self.turn = self.TURN_MIN + map
+                string += "Torso Turn={}\n".format(self.turn)
+        else:
+            print("Must specify an attribute of 'bend_forward', 'turn', or 'sideways'")
+        return [string, time]    
+            
     def set_turn(self, amt):
         """Set torso turn value to given amount and return a list with a string and int
         
@@ -571,6 +654,32 @@ class Torso:
             string += "Torso Sidways={}\n".format(self.sideways)
         return [string, time]
 
+    def change(self, part, amt):
+        string = ""
+        time = 0.0
+        amt = limit_value(amt)
+        if part == "turn":
+            map = round(amt / 100 * self.BENDFORWARD_RANGE)
+            if amt != 0:
+                time = check_timing(map)
+                self.turn = limit_change(map, self.turn, self.TURN_MAX, self.TURN_MIN)
+                string += "Torso Turn={}\n".format(self.turn)
+        elif part == "bend_forward":
+            map = round(amt / 100 * self.SIDEWAYS_RANGE)
+            if amt != 0:
+                time = check_timing(map)
+                self.bendForward = limit_change(map, self.bendForward, self.BENDFORWARD_MAX, self.BENDFORWARD_MIN)
+                string += "Torso Bend Forward={}\n".format(self.bendForward)
+        elif part == "sideways":
+            map = round(amt / 100 * self.TURN_RANGE)
+            if amt != 0:
+                time = check_timing(map)
+                self.sideways = limit_change(map, self.sideways, self.SIDEWAYS_MAX, self.SIDEWAYS_MIN)
+                string += "Torso Sideways={}\n".format(self.sideways)
+        else:
+            print("Must specify an attribute of 'bend_forward', 'turn', or 'sideways'")
+        return [string, time]
+    
     def change_turn(self, amt):
         """Change torso turn value by given amount and return a list with a string and int
         
@@ -822,6 +931,56 @@ class Arm:
             string += "{} Arm Twist={}\n".format(self.side, self.twist)
         return [string, time]
 	
+    def set(self, part, amt):
+        string = ""
+        time = 0.0
+        amt = limit_value(amt)
+        if part == "up":
+            map = round(amt / 100 * self.UP_RANGE)
+            if self.up != self.UP_MIN+map:
+                diff = self.up - (self.UP_MIN+map)
+                time = check_timing(diff)
+                self.up = self.UP_MIN + map
+                string += "{} Arm Up={}\n".format(self.side, self.up)
+        elif part == "out":
+            map = round(amt / 100 * self.OUT_RANGE)
+            if self.out != self.OUT_MIN+map:
+                diff = self.out - (self.OUT_MIN+map)
+                time = check_timing(diff)
+                self.out = self.OUT_MIN + map
+                string += "{} Arm Out={}\n".format(self.side, self.out)
+        elif part == "twist":
+            map = round(amt / 100 * self.TWIST_RANGE)
+            if self.twist != self.TWIST_MIN+map:
+                diff = self.twist - (self.TWIST_MIN+map)
+                time = check_timing(diff)
+                self.twist = self.TWIST_MIN + map
+                string += "{} Arm Twist={}\n".format(self.side, self.twist)
+        elif part == "fore_arm":
+            map = round(amt / 100 * self.FOREARM_RANGE)
+            if self.foreArm != self.FOREARM_MIN+map:
+                diff = self.foreArm - (self.FOREARM_MIN+map)
+                time = check_timing(diff)
+                self.foreArm = self.FOREARM_MIN + map
+                string += "{} Fore Arm Rotate={}\n".format(self.side, self.foreArm)
+        elif part == "elbow":
+            map = round(amt / 100 * self.ELBOW_RANGE)
+            if self.elbow != self.ELBOW_MIN+map:
+                diff = self.elbow - (self.ELBOW_MIN+map)
+                time = check_timing(diff)
+                self.elbow = self.ELBOW_MIN + map
+                string += "{} Arm Elbow={}\n".format(self.side, self.elbow)
+        elif part == "wrist":
+            map = round(amt / 100 * self.WRIST_RANGE)
+            if self.wrist != self.WRIST_MIN+map:
+                diff = self.wrist - (self.WRIST_MIN+map)
+                time = check_timing(diff)
+                self.wrist = self.WRIST_MIN + map
+                string += "{} Arm Wrist={}\n".format(self.side, self.wrist)
+        else:
+            print("Must specify an attribute of 'up', 'out', 'twist', 'fore_arm', 'elbow', or 'wrist'")
+        return [string, time]
+    
     def set_up(self, amt):
         """Set arm up value to given amount and return a list with a string and int
         
@@ -984,6 +1143,49 @@ class Arm:
             string += "{} arm Wrist={}\n".format(self.side, self.wrist)
         return [string, time]
 
+    def change(self, part, amt):
+        string = ""
+        time = 0.0
+        if part == "up":
+            map = round(amt / 100 * self.UP_RANGE)
+            if amt != 0:
+                time = check_timing(map)
+                self.up = limit_change(map, self.up, self.UP_MAX, self.UP_MIN)
+                string += "{} Arm Up={}\n".format(self.side, self.up)
+        elif part == "out":
+            map = round(amt / 100 * self.OUT_RANGE)
+            if amt != 0:
+                time = check_timing(map)
+                self.out = limit_change(map, self.out, self.OUT_MAX, self.OUT_MIN)
+                string += "{} Arm Out={}\n".format(self.side, self.out)
+        elif part == "twist":
+            map = round(amt / 100 * self.TWIST_RANGE)
+            if amt != 0:
+                time = check_timing(map)
+                self.twist = limit_change(map, self.twist, self.TWIST_MAX, self.TWIST_MIN)
+                string += "{} Arm Twist={}\n".format(self.side, self.twist)
+        elif part == "fore_arm":
+            map = round(amt / 100 * self.FOREARM_RANGE)
+            if amt != 0:
+                time = check_timing(map)
+                self.foreArm = limit_change(map, self.foreArm, self.FOREARM_MAX, self.FOREARM_MIN)
+                string += "{} Fore Arm Rotate={}\n".format(self.side, self.foreArm)
+        elif part == "elbow":
+            map = round(amt / 100 * self.ELBOW_RANGE)
+            if amt != 0:
+                time = check_timing(map)
+                self.elbow = limit_change(map, self.elbow, self.ELBOW_MAX, self.ELBOW_MIN)
+                string += "{} Arm Elbow={}\n".format(self.side, self.elbow)
+        elif part == "wrist":
+            map = round(amt / 100 * self.WRIST_RANGE)
+            if amt != 0:
+                time = check_timing(map)
+                self.wrist = limit_change(map, self.wrist, self.WRIST_MAX, self.WRIST_MIN)
+                string += "{} Arm Wrist={}\n".format(self.side, self.wrist)
+        else:
+            print("Must specify an attribute of 'up', 'out', 'twist', 'fore_arm', 'elbow', or 'wrist'")
+        return [string, time]
+    
     def change_up(self, amt):
         """Change arm's up value by given amount and return a list with a string and int
         

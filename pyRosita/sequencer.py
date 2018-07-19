@@ -136,7 +136,7 @@ class Sequencer:
         """
         return [time, time]
     
-    def add(self, action, **kwargs):
+    def add(self, action, *args, **kwargs):
         """Adds new Key/Value pairs to keyframes attr
         
         This is the primary method of the Sequencer. It takes in a string and
@@ -159,16 +159,123 @@ class Sequencer:
         # create the key for this dict entry. Keys should always be time signatures for the keyframe animation
         key = "time={0:.2f}".format(self.timer)
         
-        # Check to see which keyword arguments were given with the .add method. Checks common keywords (x, y); 
-        # if none given, just call the method with no arguments
-        if "x" in kwargs and "y" in kwargs:
-            response = self.actions[action](kwargs["x"], kwargs["y"])
-        elif "time" in kwargs:
-            response = self.actions[action](kwargs["time"])
-        elif "amt" in kwargs:
-            response = self.actions[action](kwargs["amt"])
-        else:
-            response = self.actions[action]()
+        command = action.split(" ")
+        verb = command[0]
+        noun = command[1]
+        
+        if verb == "set":
+            if noun == "default":
+                response = self.robot.default()
+            elif noun == "wait" or noun == "pause":
+                response = self.wait(args[0])
+            elif "head_" in noun:
+                part = noun.split("head_")[1]
+                if len(args) == 1 and type(args[0]) == int:
+                    response = self.robot.head.set(part, args[0])
+                elif "amt" in kwargs:
+                    response = self.robot.head.set(part, kwargs["amt"])
+                else:
+                    print("'{}' requires an 'amt' value that is an int between 0 and 100.".format(action))
+                    print("Try again in this format: seq.add('{}', <int>)".format(action))
+            elif "torso_" in noun:
+                part = noun.split("torso_")[1]
+                if len(args) == 1 and type(args[0]) == int:
+                    response = self.robot.torso.set(part, args[0])
+                elif "amt" in kwargs:
+                    response = self.robot.torso.set(part, kwargs["amt"])
+                    
+                else:
+                    print("'{}' requires an 'amt' value that is an int between 0 and 100.".format(action))
+                    print("Try again in this format: seq.add('{}', <int>)".format(action))
+            elif "left_arm_" in noun:
+                part = noun.split("left_arm_")[1]
+                if part == "aim":
+                    x = args[0][0]
+                    y = args[0][1]
+                    print("AIM called with x={} y={}".format(x, y))
+                    response = self.robot.left_aim(x, y)
+                elif len(args) == 1 and type(args[0]) == int:
+                    response = self.robot.leftArm.set(part, args[0])
+                elif "amt" in kwargs:
+                    response = self.robot.leftArm.set(part, kwargs["amt"])
+                else:
+                    print("'{}' requires an 'amt' value that is an int between 0 and 100.".format(action))
+                    print("Try again in this format: seq.add('{}', <int>)".format(action))
+            elif "right_arm_" in noun:
+                part = noun.split("right_arm_")[1]
+                if part == "aim":
+                    x = args[0][0]
+                    y = args[0][1]
+                    response = self.robot.right_aim(x, y)
+                elif len(args) == 1 and type(args[0]) == int:
+                    response = self.robot.rightArm.set(part, args[0])
+                elif "amt" in kwargs:
+                    response = self.robot.rightArm.set(part, kwargs["amt"])
+                else:
+                    print("'{}' requires an 'amt' value that is an int between 0 and 100.".format(action))
+                    print("Try again in this format: seq.add('{}', <int>)".format(action))
+            elif noun == "left_trigger":
+                response = self.robot.leftHand.trigger()
+            elif noun == "right_trigger":
+                response = self.robot.rightHand.trigger()
+            elif noun == "both_trigger":
+                response = self.robot.triggerBoth()
+            elif noun == "left_grip":
+                response = self.robot.leftHand.grip()
+            elif noun == "right_grip":
+                response = self.robot.rightHand.grip()
+            elif noun == "both_grip":
+                response = self.robot.gripBoth()
+            elif noun == "left_drop":
+                response = self.robot.leftHand.drop()
+            elif noun == "right_drop":
+                response = self.robot.rightHand.drop()
+            elif noun == "both_drop":
+                response = self.robot.dropBoth()
+            elif noun == "look_point_forward":
+                response = self.robot.look_point_forward()
+            elif noun == "look_point_left":
+                response = self.robot.look_point_left()
+            elif noun == "look_point_right":
+                response = self.robot.look_point_right()
+        elif verb == "change":
+            if "head_" in noun:
+                part = noun.split("head_")[1]
+                if len(args) == 1 and type(args[0]) == int:
+                    response = self.robot.head.change(part, args[0])
+                elif "amt" in kwargs:
+                    response = self.robot.head.change(part, kwargs["amt"])
+                else:
+                    print("'{}' requires an 'amt' value that is an int between -100 and 100.".format(action))
+                    print("Try again in this format: seq.add('{}', <int>)".format(action))
+            elif "torso_" in noun:
+                part = noun.split("torso_")[1]
+                if len(args) == 1 and type(args[0]) == int:
+                    response = self.robot.torso.change(part, args[0])
+                elif "amt" in kwargs:
+                    response = self.robot.torso.change(part, kwargs["amt"])
+                    
+                else:
+                    print("'{}' requires an 'amt' value that is an int between -100 and 100.".format(action))
+                    print("Try again in this format: seq.add('{}', <int>)".format(action))
+            elif "left_arm_" in noun:
+                part = noun.split("left_arm_")[1]
+                if len(args) == 1 and type(args[0]) == int:
+                    response = self.robot.leftArm.change(part, args[0])
+                elif "amt" in kwargs:
+                    response = self.robot.leftArm.change(part, kwargs["amt"])
+                else:
+                    print("'{}' requires an 'amt' value that is an int between -100 and 100.".format(action))
+                    print("Try again in this format: seq.add('{}', <int>)".format(action))
+            elif "right_arm_" in noun:
+                part = noun.split("right_arm_")[1]
+                if len(args) == 1 and type(args[0]) == int:
+                    response = self.robot.rightArm.change(part, args[0])
+                elif "amt" in kwargs:
+                    response = self.robot.rightArm.change(part, kwargs["amt"])
+                else:
+                    print("'{}' requires an 'amt' value that is an int between -100 and 100.".format(action))
+                    print("Try again in this format: seq.add('{}', <int>)".format(action))
         response_string = response[0]
         response_timing = response[1]
             

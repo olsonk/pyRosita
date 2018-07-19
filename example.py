@@ -36,15 +36,15 @@ Actions:
     left/right trigger/grip/buttonA/buttonB
     both trigger/grip/drop
 """
-seq.add("default")
-seq.add("both grip")
-seq.add("look point forward")
-seq.add("left aim", x=1500, y=-50)
-seq.add("left trigger")
-seq.add("change head turn", amt=100)
-seq.add("change head turn", amt=-80)
-seq.add("both drop")
-seq.add("default")
+seq.add("set default")
+seq.add("set both_grip")
+seq.add("set look_point_forward")
+seq.add("set left_arm_aim", (100,50))
+seq.add("set left_trigger")
+seq.add("change head_turn", amt=100)
+seq.add("change head_turn", amt=-80)
+seq.add("set both_drop")
+seq.add("set default")
 
 seq.generate_animation()
 
