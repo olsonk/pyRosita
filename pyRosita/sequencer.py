@@ -153,6 +153,7 @@ class Sequencer:
                 if part == "aim":
                     x = args[0][0]
                     y = args[0][1]
+                    print("AIM called with x={} y={}".format(x, y))
                     response = self.robot.right_aim(x, y)
                 elif len(args) == 1 and type(args[0]) == int:
                     response = self.robot.rightArm.set(part, args[0])

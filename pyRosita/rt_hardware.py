@@ -19,7 +19,7 @@ def check_timing(diff):
     time = 0.0
     if abs(diff) > 100 and abs(diff) < 200:
         time = 0.50
-    elif abs(diff) > 200 and abs(diff) < 300:
+    elif abs(diff) >= 200 and abs(diff) < 300:
         time = 1.5
     elif abs(diff) >= 300:
         time = 2
@@ -530,21 +530,20 @@ class Torso:
         """
         string = ""
         time = 0.0
-        amt = limit_value(amt)
         if part == "turn":
-            map = round(amt / 100 * self.BENDFORWARD_RANGE)
+            map = round(amt / 100 * self.TURN_RANGE)
             if amt != 0:
                 time = check_timing(map)
                 self.turn = limit_change(map, self.turn, self.TURN_MAX, self.TURN_MIN)
                 string += "Torso Turn={}\n".format(self.turn)
         elif part == "bend_forward":
-            map = round(amt / 100 * self.SIDEWAYS_RANGE)
+            map = round(amt / 100 * self.BENDFORWARD_RANGE)
             if amt != 0:
                 time = check_timing(map)
                 self.bendForward = limit_change(map, self.bendForward, self.BENDFORWARD_MAX, self.BENDFORWARD_MIN)
                 string += "Torso Bend Forward={}\n".format(self.bendForward)
         elif part == "sideways":
-            map = round(amt / 100 * self.TURN_RANGE)
+            map = round(amt / 100 * self.SIDEWAYS_RANGE)
             if amt != 0:
                 time = check_timing(map)
                 self.sideways = limit_change(map, self.sideways, self.SIDEWAYS_MAX, self.SIDEWAYS_MIN)
