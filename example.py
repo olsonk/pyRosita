@@ -1,44 +1,51 @@
 import requests
 import pyRosita
+from pathlib import Path
+import base64
 
-"""
 # set up a session in order to call the Tritium Web API on Rosita to run the sequence
 session = requests.Session()
 session.cookies.set("tritium_auth_token", "")
-"""
+
 
 # Edit the filename in the next line to generate new .sequence files
 # MUST end in .sequence!
-f = open('change-test.sequence', 'w')
+filename = 'its-working.sequence'
+
+f = open(filename, 'w')
 # Edit the following line to indicate your VirtualRobot username
 user = ""
 # Edit the following line to indicate your VirtualRobot ID
 id = ""
 # Edit the following line to include a short description of what this sequence performs
-description = ""
+description = "The following test runs a variety of motions for about 1 minute"
 
 rt = pyRosita.Robot()
 seq = pyRosita.Sequencer(f, rt, user, description, id)
 
 """
-For movements, use numbers between -90 (fully down/right) and 90 (fully up/left)
-Actions:
-    default (resets robot to default pose)
-    wait, time=?
-    head move, x=?, y=?
-    head nod/turn/roll, amt=?,
-    change head nod/turn/roll, amt=? (between -100 and 100)
-    torso bend forward/sideways/turn, amt=?
-    left/right arm move, x=?, y=?
-    left/right up/out/twist/forearm/elbow/wrist, amt=?
-	look point forward/left/right
-	left/right aim, x=?, y=?
-    left/right trigger/grip/buttonA/buttonB
-    both trigger/grip/drop
+To add movements to the animation, use seq.add("<verb> <noun>", <int or tuple>)
+Acceptable verbs are "set" or "change"
+Acceptable nouns are snake_case robot commands:
+    default
+    wait
+    look_point_forward/left/right
+    head_move
+    head_nod/turn/roll
+    torso_move
+    torso_sideways/turn/bend_forward
+    right/left_arm_aim/move
+    right/left_arm_up/out/twist/elbow/wrist/fore_arm
+    both/right/left_trigger/grip/drop/buttonA/buttonB
+Arguments may either be tuples (for x,y actions like "aim" or "move"), or ints
+    "set" ints should be between 0 and 100
+    "change" ints should be between -100 and 100
 """
+
 seq.add("set default")
 seq.add("set both_grip")
 seq.add("set look_point_forward")
+seq.add("set both_trigger")
 seq.add("set left_arm_aim", (100,50))
 seq.add("set left_trigger")
 seq.add("change torso_turn", -60)
@@ -51,33 +58,36 @@ seq.add("change torso_turn", 30)
 seq.add("set left_trigger")
 seq.add("set right_arm_aim", (50, 70))
 seq.add("set right_trigger")
-seq.add("change right_arm_up", -30)
+seq.add("set right_arm_aim", (50,-30))
 seq.add("set right_trigger")
 seq.add("change torso_turn", -40)
 seq.add("set right_trigger")
+seq.add('set left_arm_aim', (50, 50))
+seq.add('set left_trigger')
+seq.add('set right_arm_aim', (50, 50))
+seq.add('set right_trigger')
 seq.add("set both_drop")
 seq.add("set default")
-seq.add('look', 50, 50)
 
 seq.generate_animation()
 
 f.close()
+f = open(filename, 'rb')
 
-'''
-file_to_upload = open("kevintest.sequence")
+# Files uploaded to RoboThespian must be base64-encoded strings
+# Encode the file, then decode to ascii to send over
+file_data = f.read()
+file_decoded = base64.b64encode(file_data).decode('ascii')
 
-args = {
-    "asset_type_name": "sequence",
-    "directory_route": "user/Eldad/",
-    "asset_file_name": "kevintest.sequence",
-    "file_path": "kevintest.sequence",
-}
+upload_url = "https://rt-0101.robothespian.co.uk/tritium/asset_manager/assets"
 
-r = json.dumps(args)
-json_r = json.loads(r)
-print("JSON dumped args")
-print(r)
-response = session.post("http://rt-0101.robothespian.co.uk/assets/upload", data=args, files={"kevintest":file_to_upload})
+data = {'file_data_base64': file_decoded,
+        'asset_type_name': 'sequence',
+        'directory_route': 'user/',
+        'asset_file_name': filename
+        }
+
+response = session.post(upload_url, json=data)
 
 print("Response object")
 print(response)
@@ -85,4 +95,4 @@ print(response.content)
 print("Response Items")
 for item in response:
     print(item)
-'''
+f.close()
