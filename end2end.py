@@ -55,13 +55,13 @@ def main(sequence, time):
 
     # start Rosita's animations
     play_url = "https://rt-0101.robothespian.co.uk/tritium/sequence_player/play/"
-    response = session.put(play_url+sequence)
-    print(response)
+    #response = session.put(play_url+sequence)
+    #print(response)
 
     # start systrace.py
-    # edit to reflect the path of systrace
-    systrace_path = "C:\\Users\\olsonkev\\Documents\\psytrace-master\\systrace.py"
-    os.system("python {} {}".format(systrace_path, time))
+    SYSTRACE_FILEPATH = os.path.dirname(os.path.realpath(__file__))
+    SYSTRACE_FILEPATH = os.path.join(SYSTRACE_FILEPATH, "systrace.py")
+    os.system("python \"{}\" {}".format(SYSTRACE_FILEPATH, time))
 
 if (__name__ == "__main__"):
     parser = argparse.ArgumentParser()

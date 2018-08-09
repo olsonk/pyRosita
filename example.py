@@ -46,6 +46,7 @@ def main():
 
     seq.add("set default")
     seq.add("set both_grip")
+    
     seq.add("set look_point_forward")
     seq.add("set both_trigger")
     seq.add("set left_arm_aim", (100,50))
@@ -93,7 +94,9 @@ def main():
     response = session.post(upload_url, json=data)
     
     print("Running end2end.py")
-    os.system("python end2end.py {} {}".format(seq.file.name.split(".")[0], time_for_animation))
+    THIS_FILEPATH = os.path.dirname(os.path.realpath(__file__))
+    TEST_RUN_FILEPATH = os.path.join(THIS_FILEPATH, "end2end.py")
+    os.system("python \"{}\" {} {}".format(TEST_RUN_FILEPATH, seq.file.name.split(".")[0], time_for_animation))
     
 if (__name__ == "__main__"):
     main()

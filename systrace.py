@@ -103,7 +103,7 @@ def main():
     PSYTRACE_FILEPATH = os.path.dirname(os.path.realpath(__file__))
     PSYTRACE_FILEPATH = os.path.join(PSYTRACE_FILEPATH, "psytrace.py")
     for filepath in glob.glob("traces/*.txt"):
-        os_system("py %s %s %s.out" % (PSYTRACE_FILEPATH, filepath, filepath))
+        os_system("py \"%s\" %s %s.out" % (PSYTRACE_FILEPATH, filepath, filepath))
 
     now = datetime.datetime.now()
     filepath = now.strftime("traces_%Y%m%d-%H%M%S_self_serve.zip")

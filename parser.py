@@ -18,8 +18,9 @@ def match(phrase):
 
 
 # Get list of all filenames ending in .txt.logcat in traces/ directory
-mypath = "traces/"
-onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+TRACES_FILEPATH = os.path.dirname(os.path.realpath(__file__))
+TRACES_FILEPATH = os.path.join(TEST_RUN_FILEPATH, "traces/")
+onlyfiles = [f for f in listdir(TRACES_FILEPATH) if isfile(join(TRACES_FILEPATH, f))]
 files = []
 for file in onlyfiles:
     if ".txt.logcat" in file:
