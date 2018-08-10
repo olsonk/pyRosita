@@ -16,9 +16,9 @@ import zipfile
 import argparse
 
 
-SYSTRACE_PERIODIC_SLEEP_SECONDS_OUTSIDE_TRACE = 0
-SYSTRACE_PERIODIC_SLEEP_SECONDS_INSIDE_TRACE = 1
-SYSTRACE_PERIODIC_ITERATIONS = 4
+SYSTRACE_PERIODIC_SLEEP_SECONDS_OUTSIDE_TRACE = 10
+SYSTRACE_PERIODIC_SLEEP_SECONDS_INSIDE_TRACE = 0
+SYSTRACE_PERIODIC_ITERATIONS = 1
 LOG_LEVEL = logging.DEBUG
 
 
@@ -46,8 +46,8 @@ def adb_shell(cmd):
 
 
 def main():
-    print("Running systrace.py with SYSTRACE_PERIODIC_ITERATIONS of {}".format(SYSTRACE_PERIODIC_ITERATIONS))
-    print("systrace will last for approximately {} seconds.".format(SYSTRACE_PERIODIC_ITERATIONS*3.45))
+    print("Running systrace.py with SYSTRACE_PERIODIC_SLEEP_SECONDS_OUTSIDE_TRACE of {}".format(SYSTRACE_PERIODIC_SLEEP_SECONDS_OUTSIDE_TRACE))
+    print("systrace will last for approximately {} seconds.".format(SYSTRACE_PERIODIC_SLEEP_SECONDS_OUTSIDE_TRACE*3.45))
     logging_format = "%(asctime).23s %(levelname)s:%(filename)s(%(lineno)d) [%(thread)d]: %(message)s"
 
     logger_handler = logging.StreamHandler()
@@ -123,5 +123,5 @@ if (__name__ == "__main__"):
                         help='Specify the amount of time (seconds) to run systrace')
     args = parser.parse_args()
     time = args.time
-    SYSTRACE_PERIODIC_ITERATIONS = round(time/3.45)
+    SYSTRACE_PERIODIC_SLEEP_SECONDS_OUTSIDE_TRACE = time
     main()
