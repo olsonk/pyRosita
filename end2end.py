@@ -55,7 +55,7 @@ def main(sequence, time):
 
     # start Rosita's animations
     play_url = "https://rt-0101.robothespian.co.uk/tritium/sequence_player/play/"
-    #response = session.put(play_url+sequence)
+    response = session.put(play_url+sequence)
     #print(response)
 
     # start systrace.py
