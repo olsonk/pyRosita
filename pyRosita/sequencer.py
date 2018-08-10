@@ -141,6 +141,11 @@ class Sequencer:
                     y = args[0][1]
                     print("AIM called with x={} y={}".format(x, y))
                     response = self.robot.left_aim(x, y)
+                elif part == "move":
+                    x = args[0][0]
+                    y = args[0][1]
+                    print("MOVE called with x={} y={}".format(x, y))
+                    response = self.robot.leftArm.move(x, y)
                 elif len(args) == 1 and type(args[0]) == int:
                     response = self.robot.leftArm.set(part, args[0])
                 elif "amt" in kwargs:
@@ -155,6 +160,11 @@ class Sequencer:
                     y = args[0][1]
                     print("AIM called with x={} y={}".format(x, y))
                     response = self.robot.right_aim(x, y)
+                elif part == "move":
+                    x = args[0][0]
+                    y = args[0][1]
+                    print("MOVE called with x={} y={}".format(x, y))
+                    response = self.robot.rightArm.move(x, y)
                 elif len(args) == 1 and type(args[0]) == int:
                     response = self.robot.rightArm.set(part, args[0])
                 elif "amt" in kwargs:

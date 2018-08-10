@@ -1,6 +1,6 @@
 import re
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join, dirname, realpath
 import json
 import datetime
 
@@ -18,8 +18,8 @@ def match(phrase):
 
 
 # Get list of all filenames ending in .txt.logcat in traces/ directory
-TRACES_FILEPATH = os.path.dirname(os.path.realpath(__file__))
-TRACES_FILEPATH = os.path.join(TEST_RUN_FILEPATH, "traces/")
+TRACES_FILEPATH = dirname(realpath(__file__))
+TRACES_FILEPATH = join(TRACES_FILEPATH, "traces/")
 onlyfiles = [f for f in listdir(TRACES_FILEPATH) if isfile(join(TRACES_FILEPATH, f))]
 files = []
 for file in onlyfiles:
@@ -84,7 +84,7 @@ for item in oculus_os_dml_data:
 
 # Set the file to write the parsed results to
 now = datetime.datetime.now()
-filepath = join(mypath, now.strftime("%Y%m%d-%H%M%S_results.csv"))
+filepath = join(TRACES_FILEPATH, now.strftime("%Y%m%d-%H%M%S_results.csv"))
 result = open(filepath, "w")
 
 # Write headers for file
@@ -97,7 +97,7 @@ result.write("\n")
 time_regex = r'[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}'
 
 for file in files:
-    opened_file = open(join(mypath, file), "rb")
+    opened_file = open(join(TRACES_FILEPATH, file), "rb")
     for line in opened_file:
         if b"FPS=" in line or b'insideout_periodic' in line or b'controller_imu_average_rtt' in line or b'current_now' in line:
             line = str(line)
@@ -106,6 +106,7 @@ for file in files:
             
             try:
                 timestamp = re.search(time_regex, line).group()
+                timestamp = timestamp.split(" ")[0] + "-18 " + timestamp.split(" ")[1]
                 result.write(timestamp+",")
             except:
                 result.write(",")
